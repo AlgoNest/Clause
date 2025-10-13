@@ -1,0 +1,568 @@
+{% extends "layout.html" %}
+{% block title %}Analyze Contract Clauses{% endblock %}
+{% block body %}
+<main class="lg:ml-64 min-h-screen bg-gray-50">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">Contract Clause Analysis</h1>
+
+      <!-- Input Method Selection -->
+      <div class="mb-6">
+        <div class="flex gap-4 mb-4">
+          <button
+            type="button"
+            id="paste-text-btn"
+            class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+          >
+            Paste Text
+          </button>
+          <button
+            type="button"
+            id="upload-file-btn"
+            class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 transition-colors"
+          >
+            Upload File
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <div class="mb-8">
+        <form id="clause-form" enctype="multipart/form-data" class="space-y-4">
+          <!-- Text Input Section -->
+          <div id="text-input-section">
+            <label for="clause-text" class="block text-sm font-medium text-gray-700 mb-2">
+              Enter Contract Clause Text
+            </label>
+            <textarea
+              id="clause-text"
+              name="clause_text"
+              rows="6"
+              maxlength="10000"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical font-mono text-sm"
+              placeholder="Paste your contract clause text here..."
+            ></textarea>
+            <div class="flex justify-between items-center mt-1">
+              <p class="text-sm text-gray-500">Supports plain text, legal formatting, and contract clauses</p>
+              <div class="text-sm text-gray-500">
+                <span id="char-count">0</span>/10,000 characters
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload Section -->
+          <div id="file-input-section" class="hidden">
+            <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-2">
+              Upload Contract File (PDF, DOCX, or TXT)
+            </label>
+            <input
+              type="file"
+              id="file-upload"
+              name="file"
+              accept=".pdf,.docx,.txt"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            >
+            <p class="mt-1 text-sm text-gray-500">Supported formats: PDF, DOCX, TXT (max 10MB)</p>
+            <div id="file-validation-message" class="mt-1 text-sm text-red-600 hidden"></div>
+          </div>
+
+          <div class="flex gap-4">
+            <button
+              type="submit"
+              id="submit-btn"
+              class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span id="submit-text">Analyze Clause</span>
+              <svg id="submit-spinner" class="inline w-4 h-4 ml-2 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Loading Section -->
+      <div id="loading" class="hidden mb-8">
+        <div class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <span class="ml-3 text-lg text-gray-600">Analyzing clause...</span>
+        </div>
+      </div>
+
+      <!-- Error Section -->
+      <div id="error" class="hidden mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-red-700" id="error-message"></span>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="hidden">
+        <div class="mb-6 flex justify-between items-center">
+          <h2 class="text-2xl font-bold text-gray-900">Analysis Results</h2>
+          <div class="flex gap-2">
+            <button
+              id="download-pdf-btn"
+              class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              Download PDF
+            </button>
+            <button
+              id="save-analysis-btn"
+              class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 transition-colors"
+            >
+              Save to My Analyses
+            </button>
+            <button
+              id="analyze-another-btn"
+              class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+            >
+              Analyze Another
+            </button>
+          </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Executive Summary</h3>
+          <div id="executive-summary" class="text-gray-700">
+            <!-- Summary will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="mb-8 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 border border-red-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Risk Assessment</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Rule-Based Risk Score</h4>
+              <div class="text-3xl font-bold text-red-600" id="rule-risk-score">0/10</div>
+              <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
+                <div id="rule-risk-bar" class="bg-red-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">AI-Based Risk Level</h4>
+              <div class="text-3xl font-bold text-orange-600" id="ai-risk-level">Unknown</div>
+              <div class="text-sm text-gray-600 mt-1" id="ai-risk-description">No AI analysis available</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Findings -->
+        <div class="mb-8 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Key Findings</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-3">Rule-Based Flags</h4>
+              <ul id="rule-flags" class="space-y-2">
+                <!-- Flags will be populated by JavaScript -->
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-3">AI Insights</h4>
+              <div id="ai-insights" class="space-y-3">
+                <!-- AI insights will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Rule-Based Results -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+              <h3 class="text-xl font-semibold text-blue-900">Rule-Based Analysis</h3>
+              <span class="ml-auto text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">Fast</span>
+            </div>
+            <div id="rule-results" class="space-y-3">
+              <!-- Results will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- AI Results -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              <h3 class="text-xl font-semibold text-green-900">AI Analysis</h3>
+              <span class="ml-auto text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">Processing...</span>
+            </div>
+            <div id="ai-results" class="space-y-3">
+              <!-- Results will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Analysis Comparison</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Risk Assessment</h4>
+              <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                  <div class="text-sm text-gray-600">Rule-Based</div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="rule-risk-bar-compare" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-sm text-gray-600">AI-Based</div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="ai-risk-bar-compare" class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Confidence Level</h4>
+              <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                  <div class="text-sm text-gray-600">Rule-Based</div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-sm text-gray-600">AI-Based</div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="ai-confidence-bar" class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Modal -->
+      <div id="history-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-900">Analysis History</h3>
+            <button id="close-history-btn" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <div id="history-list" class="space-y-3">
+            <!-- History items will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+<script>
+  // Enhanced functionality for analyze page
+  document.addEventListener('DOMContentLoaded', function() {
+    const pasteTextBtn = document.getElementById('paste-text-btn');
+    const uploadFileBtn = document.getElementById('upload-file-btn');
+    const textInputSection = document.getElementById('text-input-section');
+    const fileInputSection = document.getElementById('file-input-section');
+    const clauseForm = document.getElementById('clause-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const errorMessage = document.getElementById('error-message');
+    const results = document.getElementById('results');
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    const saveAnalysisBtn = document.getElementById('save-analysis-btn');
+    const analyzeAnotherBtn = document.getElementById('analyze-another-btn');
+
+    let currentAnalysis = null;
+
+    // Character counter for textarea
+    const textarea = document.getElementById('clause-text');
+    const charCount = document.getElementById('char-count');
+
+    textarea.addEventListener('input', function() {
+      charCount.textContent = this.value.length;
+      if (this.value.length > 9500) {
+        charCount.classList.add('text-red-600');
+        charCount.classList.remove('text-gray-500');
+      } else {
+        charCount.classList.remove('text-red-600');
+        charCount.classList.add('text-gray-500');
+      }
+    });
+
+    // File validation
+    const fileInput = document.getElementById('file-upload');
+    const fileValidationMessage = document.getElementById('file-validation-message');
+
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        // Check file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+          fileValidationMessage.textContent = 'File size must be less than 10MB';
+          fileValidationMessage.classList.remove('hidden');
+          this.value = '';
+          return;
+        }
+
+        // Check file type
+        const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+        const allowedExtensions = ['.pdf', '.docx', '.txt'];
+        const fileName = file.name.toLowerCase();
+
+        const isValidType = allowedTypes.includes(file.type) ||
+                           allowedExtensions.some(ext => fileName.endsWith(ext));
+
+        if (!isValidType) {
+          fileValidationMessage.textContent = 'Please select a PDF, DOCX, or TXT file';
+          fileValidationMessage.classList.remove('hidden');
+          this.value = '';
+          return;
+        }
+
+        fileValidationMessage.classList.add('hidden');
+      }
+    });
+
+    // Input method switching
+    pasteTextBtn.addEventListener('click', function() {
+      pasteTextBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+      pasteTextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+      uploadFileBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      uploadFileBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+      textInputSection.classList.remove('hidden');
+      fileInputSection.classList.add('hidden');
+      document.getElementById('clause-text').required = true;
+      document.getElementById('file-upload').required = false;
+      fileValidationMessage.classList.add('hidden');
+    });
+
+    uploadFileBtn.addEventListener('click', function() {
+      uploadFileBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+      uploadFileBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+      pasteTextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      pasteTextBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+      fileInputSection.classList.remove('hidden');
+      textInputSection.classList.add('hidden');
+      document.getElementById('file-upload').required = true;
+      document.getElementById('clause-text').required = false;
+    });
+
+    // Form submission
+    clauseForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Validate input
+      const textInput = document.getElementById('clause-text').value.trim();
+      const fileInput = document.getElementById('file-upload').files[0];
+
+      if (!textInput && !fileInput) {
+        errorMessage.textContent = 'Please provide either text input or select a file to analyze.';
+        error.classList.remove('hidden');
+        return;
+      }
+
+      // Show loading
+      loading.classList.remove('hidden');
+      error.classList.add('hidden');
+      results.classList.add('hidden');
+      submitBtn.disabled = true;
+      document.getElementById('submit-text').textContent = 'Analyzing...';
+      document.getElementById('submit-spinner').classList.remove('hidden');
+
+      try {
+        const formData = new FormData(this);
+
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Analysis failed');
+        }
+
+        currentAnalysis = data;
+        displayResults(data);
+
+        // Scroll to results
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        errorMessage.textContent = err.message;
+        error.classList.remove('hidden');
+        // Scroll to error
+        error.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        loading.classList.add('hidden');
+        submitBtn.disabled = false;
+        document.getElementById('submit-text').textContent = 'Analyze Clause';
+        document.getElementById('submit-spinner').classList.add('hidden');
+      }
+    });
+
+    // Display results function
+    function displayResults(analysis) {
+      // Executive Summary
+      const ruleSummary = analysis.rule_based.summary || 'No rule-based summary available';
+      const aiSummary = analysis.ai_based.summary || 'No AI summary available';
+      document.getElementById('executive-summary').innerHTML = `
+        <p class="mb-2"><strong>Rule-Based:</strong> ${ruleSummary}</p>
+        <p><strong>AI Analysis:</strong> ${aiSummary}</p>
+      `;
+
+      // Risk Assessment
+      const ruleRisk = analysis.rule_based.risk_score || 0;
+      document.getElementById('rule-risk-score').textContent = `${ruleRisk}/10`;
+      document.getElementById('rule-risk-bar').style.width = `${(ruleRisk / 10) * 100}%`;
+
+      const aiRisk = analysis.ai_based.risk_level || 'Unknown';
+      document.getElementById('ai-risk-level').textContent = aiRisk;
+      document.getElementById('ai-risk-description').textContent = getRiskDescription(aiRisk);
+
+      // Key Findings
+      const ruleFlags = analysis.rule_based.flags || [];
+      document.getElementById('rule-flags').innerHTML = ruleFlags.length > 0
+        ? ruleFlags.map(flag => `<li class="text-red-600">• ${flag}</li>`).join('')
+        : '<li class="text-gray-500">No flags detected</li>';
+
+      const aiTerms = analysis.ai_based.key_terms || [];
+      const aiRecommendations = analysis.ai_based.recommendations || [];
+      document.getElementById('ai-insights').innerHTML = `
+        ${aiTerms.length > 0 ? `<p class="mb-2"><strong>Key Terms:</strong> ${aiTerms.join(', ')}</p>` : ''}
+        ${aiRecommendations.length > 0 ? `<ul class="space-y-1">${aiRecommendations.map(rec => `<li class="text-green-600">• ${rec}</li>`).join('')}</ul>` : '<p class="text-gray-500">No recommendations available</p>'}
+      `;
+
+      // Detailed Results
+      document.getElementById('rule-results').innerHTML = `
+        <div class="text-sm text-gray-600">
+          <p><strong>Clause Type:</strong> ${analysis.rule_based.clause_type || 'Unknown'}</p>
+          <p><strong>Risk Score:</strong> ${ruleRisk}/10</p>
+          <p><strong>Summary:</strong> ${ruleSummary}</p>
+        </div>
+      `;
+
+      document.getElementById('ai-results').innerHTML = `
+        <div class="text-sm text-gray-600">
+          <p><strong>Clause Type:</strong> ${analysis.ai_based.clause_type || 'Unknown'}</p>
+          <p><strong>Risk Level:</strong> ${aiRisk}</p>
+          <p><strong>Summary:</strong> ${aiSummary}</p>
+        </div>
+      `;
+
+      // Update comparison bars
+      document.getElementById('rule-risk-bar-compare').style.width = `${(ruleRisk / 10) * 100}%`;
+      document.getElementById('ai-risk-bar-compare').style.width = getRiskPercentage(aiRisk) + '%';
+      document.getElementById('ai-confidence-bar').style.width = '75%'; // Placeholder
+
+      results.classList.remove('hidden');
+    }
+
+    // Helper functions
+    function getRiskDescription(riskLevel) {
+      const descriptions = {
+        'Low': 'Minimal risk detected',
+        'Medium': 'Moderate risk requiring attention',
+        'High': 'Significant risk requiring immediate action',
+        'Critical': 'Severe risk requiring urgent review',
+        'Unknown': 'Risk assessment unavailable'
+      };
+      return descriptions[riskLevel] || 'Risk assessment unavailable';
+    }
+
+    function getRiskPercentage(riskLevel) {
+      const percentages = {
+        'Low': 25,
+        'Medium': 50,
+        'High': 75,
+        'Critical': 100,
+        'Unknown': 0
+      };
+      return percentages[riskLevel] || 0;
+    }
+
+    // PDF Download
+    downloadPdfBtn.addEventListener('click', async function() {
+      if (!currentAnalysis) {
+        alert('No analysis data to download.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/generate-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ analysis_data: currentAnalysis })
+        });
+
+        if (!response.ok) {
+          throw new Error('PDF generation failed');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `clause_analysis_${currentAnalysis.analysis_id || 'report'}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (err) {
+        alert('Error downloading PDF: ' + err.message);
+      }
+    });
+
+    // Save Analysis
+    saveAnalysisBtn.addEventListener('click', async function() {
+      if (!currentAnalysis) {
+        alert('No analysis data to save.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ analysis_data: currentAnalysis })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Save failed');
+        }
+
+        alert('Analysis saved successfully!');
+      } catch (err) {
+        alert('Error saving analysis: ' + err.message);
+      }
+    });
+
+    // Analyze Another
+    analyzeAnotherBtn.addEventListener('click', function() {
+      results.classList.add('hidden');
+      currentAnalysis = null;
+      clauseForm.reset();
+      pasteTextBtn.click(); // Reset to text input
+    });
+
+    // Initialize with text input selected
+    pasteTextBtn.click();
+  });
+</script>
+
+{% endblock %}

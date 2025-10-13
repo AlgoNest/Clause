@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clause — Stop signing bad contracts</title>
+
+  <!-- Tailwind CDN (for prototyping) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Motion One (Framer team) for animations in vanilla JS -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@motionone/dom/dist/motion.dev.js"></script>
+
+  <style>
+    /* Small custom styles for subtle polish */
+    :root{
+      --accent: #06b6d4; /* cyan-500 */
+      --accent-2: #2563eb; /* blue-600 */
+    }
+    /* nice glass card */
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* simple scan bar animation fallback */
+    @keyframes progress {
+      0% { width: 0% }
+      100% { width: 100% }
+    }
+    
+    /* Floating notification animation */
+    @keyframes floatIn {
+      0% { transform: translateY(100px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes floatOut {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="antialiased text-slate-900 bg-white">
+
+  <!-- NAV -->
+  <header class="fixed w-full z-40 top-0 left-0">
+    <div class="max-w-7xl mx-auto px-6">
+      <nav class="flex items-center justify-between py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">CG</div>
+          <div>
+            <a href="#hero" class="text-lg font-semibold text-slate-900">Clause</a>
+            <div class="text-xs text-slate-500 -mt-0.5">contract safety, fast</div>
+          </div>
+        </div>
+
+        <div class="hidden md:flex items-center gap-6">
+          <a href="#pricing" class="text-sm text-slate-600 hover:text-slate-900">Pricing</a>
+          <a href="#faq" class="text-sm text-slate-600 hover:text-slate-900">FAQ</a>
+          <a href="#reviews" class="text-sm text-slate-600 hover:text-slate-900">Reviews</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <a href="#demo" id="see-action-top" class="hidden md:inline-block text-sm px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50">
+            Signup
+          </a>
+          <a href="#pricing" class="inline-block text-sm font-semibold px-4 py-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow">Login</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pt-24">
+<!-- HERO -->
+<section id="hero" class="relative overflow-hidden bg-white text-center">
+  <style>
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes float-slow {
+      0% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(10px) translateX(10px); }
+      100% { transform: translateY(0px) translateX(0px); }
+    }
+
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
+  </style>
+
+  <!-- Background floating shapes -->
+  <svg class="absolute -top-16 -left-20 w-72 opacity-10 text-cyan-400 animate-float" viewBox="0 0 200 200">
+    <path fill="currentColor" d="M40,-50.6C51.7,-42.8,61.7,-31.7,67.1,-18.3C72.5,-4.9,73.3,10.7,67.3,23.6C61.2,36.6,48.2,46.8,34.2,54.5C20.2,62.1,10.1,67.2,-2.5,70.7C-15,74.2,-30,76.1,-41.3,69.7C-52.5,63.3,-60.1,48.6,-67.5,34.3C-75,19.9,-82.3,5.9,-82.4,-8.5C-82.5,-22.9,-75.5,-37.7,-64.8,-48.5C-54,-59.2,-39.5,-65.9,-25,-69.3C-10.5,-72.6,3.9,-72.6,17.3,-67.6C30.7,-62.6,40,-50.6,40,-50.6Z" transform="translate(100 100)" />
+  </svg>
+
+  <svg class="absolute bottom-10 right-10 w-60 opacity-10 text-blue-500 animate-float-slow" viewBox="0 0 500 500">
+    <path fill="currentColor" d="M438,317Q391,384,317,418Q243,452,164,429Q85,406,66,323.5Q47,241,78,171Q109,101,185,74Q261,47,332,82Q403,117,439,183.5Q475,250,438,317Z" />
+  </svg>
+
+  <div class="max-w-4xl mx-auto px-6 relative py-24 flex flex-col items-center justify-center">
+
+    <!-- Headline + Subtext -->
+    <h1 class="text-4xl md:text-5xl font-extrabold leading-tight max-w-3xl">
+      Don't Sign Bad Contracts That Cost You Thousands
+    </h1>
+
+    <p class="mt-4 text-lg text-slate-600 max-w-2xl">
+      Upload any contract and instantly uncover hidden risks, auto-renewal traps, unlimited liability, and unfair IP terms — with exact wording to fix them.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href="#demo" id="cta-scan" class="rounded-full px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-600 text-black font-semibold shadow-lg hover:opacity-95 transition">
+        Scan My Contract
+      </a>
+      <a href="#aha" class="px-4 py-2 text-sm text-slate-700 rounded-full border border-slate-200 hover:bg-slate-50 transition">
+        How it work's?
+      </a>
+    </div>
+
+    <!-- Info Row -->
+    <div class="mt-6 flex flex-col items-center gap-2 text-sm text-slate-500">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        No credit card required • 2-minute analysis • Confidential
+      </div>
+    </div>
+
+    <!-- Trusted by -->
+    <div class="mt-8 flex flex-col items-center gap-3">
+      <div class="text-slate-500 text-sm">Trusted by</div>
+      <div class="flex -space-x-3">
+        <img src="https://i.pravatar.cc/40?img=1" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="user">
+        <img src="https://i.pravatar.cc/40?img=23" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="user">
+        <img src="https://i.pravatar.cc/40?img=3" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="user">
+        <img src="https://i.pravatar.cc/40?img=44" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="user">
+        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-semibold border border-white">+50</div>
+      </div>
+    </div>
+
+    <!-- Illustration -->
+    <div class="relative mt-14 w-full flex justify-center">
+      <div class="absolute -right-16 -top-8 w-40 h-40 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 opacity-20 blur-3xl pointer-events-none animate-float"></div>
+
+      <svg class="absolute -bottom-8 left-20 w-32 h-32 text-blue-300 opacity-20 animate-float-slow" viewBox="0 0 200 200">
+        <polygon points="100,10 190,190 10,190" fill="currentColor" />
+      </svg>
+
+      
+    </div>
+
+  </div>
+</section>
+
+
+ <!-- AHA / Before/After -->
+<section id="aha" class="relative py-20 bg-gradient-to-b from-slate-50 to-slate-100 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-4xl font-semibold text-gray-800 mb-10 animate-fadeIn">
+      See How It Works
+    </h2>
+
+    <!-- Video container -->
+    <div class="relative inline-block group">
+      <!-- Animated pulse background -->
+      <div class="absolute inset-0 rounded-3xl bg-blue-200/30 blur-3xl opacity-0 group-hover:opacity-100 transition duration-700 ease-in-out animate-pulse"></div>
+
+      <!-- Video iframe -->
+      <iframe
+        class="relative z-10 rounded-2xl shadow-2xl transform group-hover:scale-[1.02] transition-all duration-500 ease-in-out"
+        width="860"
+        height="450"
+        src="https://www.youtube.com/embed/fkIvmfqX-t0?si=cvm7rpI5P_WUQJe6"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- Animations -->
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out;
+}
+</style>
+
+<!-- Pain Points -->
+<section id="problem" class="py-20 relative overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+    <h2 class="text-3xl font-bold text-center">Is this your problem?</h2>
+    <p class="mt-3 text-center text-slate-600 max-w-2xl mx-auto">
+      Clause finds risky clauses, explains the real business impact, and gives you exact wording to negotiate — in minutes.
+    </p>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-8">
+      <div class="group p-8 bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 text-center hover:-translate-y-2">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-red-500 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div class="font-semibold text-lg">Hidden Auto-Renewals</div>
+        <div class="text-sm text-slate-500 mt-2">Stop paying for services you no longer use.</div>
+      </div>
+
+      <div class="group p-8 rounded-2xl bg-gradient-to-br from-blue-900 to-slate-800 text-white shadow-lg transition-all duration-300 text-center hover:-translate-y-2">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-cyan-400 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2l9 4.9v9.8L12 22l-9-5.3V6.9L12 2z" />
+          </svg>
+        </div>
+        <div class="font-semibold text-lg">Unlimited Liability</div>
+        <div class="text-sm text-slate-300 mt-2">Avoid personal or business exposure from bad clauses.</div>
+      </div>
+
+      <div class="group p-8 bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 text-center hover:-translate-y-2">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2v20m0-8h8m-8-4H4" />
+          </svg>
+        </div>
+        <div class="font-semibold text-lg">Losing IP Rights</div>
+        <div class="text-sm text-slate-500 mt-2">Keep ownership of your work and portfolio.</div>
+      </div>
+    </div>
+
+    <div class="text-center mt-10">
+      <span class="text-slate-700 font-semibold">Clause solves this in 2 minutes, not 2 hours</span>
+    </div>
+  </div>
+
+  <!-- background svg shapes -->
+  <svg class="absolute top-0 left-0 w-40 h-40 text-cyan-100 opacity-40 animate-pulse" fill="currentColor" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="100" />
+  </svg>
+  <svg class="absolute bottom-0 right-0 w-48 h-48 text-blue-100 opacity-30 animate-spin-slow" fill="currentColor" viewBox="0 0 200 200">
+    <rect width="200" height="200" rx="40" />
+  </svg>
+</section>
+
+
+<!-- How it Works -->
+<section id="how" class="py-20 bg-slate-50 relative overflow-hidden">
+  <div class="max-w-5xl mx-auto px-6 relative z-10">
+    <h2 class="text-3xl font-bold text-center">3 Simple Steps to Contract Confidence</h2>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-8">
+      <div class="group p-8 bg-white rounded-2xl shadow text-center hover:-translate-y-2 hover:shadow-lg transition-all duration-300">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-cyan-500 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 4h16v16H4zM8 8h8v8H8z" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg">Upload Your Contract</h4>
+        <p class="text-sm text-slate-500 mt-2">PDF, DOCX, or copy-paste text</p>
+      </div>
+
+      <div class="group p-8 bg-gradient-to-br from-blue-900 to-slate-800 rounded-2xl text-white text-center shadow-lg hover:-translate-y-2 transition-all duration-300">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-cyan-400 group-hover:rotate-6 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg">AI Analysis in 60 Seconds</h4>
+        <p class="text-sm text-slate-300 mt-2">Our AI scans for 50+ risk patterns</p>
+      </div>
+
+      <div class="group p-8 bg-white rounded-2xl shadow text-center hover:-translate-y-2 hover:shadow-lg transition-all duration-300">
+        <div class="flex justify-center mb-4">
+          <svg class="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 12h16M4 6h16M4 18h16" />
+          </svg>
+        </div>
+        <h4 class="font-semibold text-lg">Get Actionable Report</h4>
+        <p class="text-sm text-slate-500 mt-2">Specific risks + exact wording to fix them</p>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="#demo" class="text-sm px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-600 text-black rounded-full font-semibold shadow hover:opacity-90 transition-all">
+        See Live Example Report
+      </a>
+    </div>
+  </div>
+
+  <!-- floating shapes -->
+  <svg class="absolute top-10 right-20 w-20 h-20 text-cyan-100 opacity-30 animate-float" fill="currentColor" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="50" />
+  </svg>
+</section>
+
+<!-- Real Risk Examples -->
+<section id="cases" class="relative overflow-hidden py-24 bg-gradient-to-b from-white via-slate-50 to-white">
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-3xl font-bold leading-tight">
+          Real Contracts We've Analyzed
+        </h2>
+        <p class="mt-2 text-slate-600 max-w-md">
+          Every contract tells a story. Here’s how founders and freelancers protected thousands with Clause.
+        </p>
+      </div>
+      <a href="#demo" class="hidden md:inline-block mt-6 md:mt-0 px-5 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-cyan-400 to-blue-600 text-black shadow hover:opacity-90 transition">
+        See My Contract Score →
+      </a>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-8">
+      <!-- Case 1 -->
+      <div class="group relative p-8 bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+        <div class="absolute -top-3 -left-3 w-10 h-10 bg-cyan-100 rounded-full blur-md opacity-60"></div>
+        <div class="text-sm text-slate-500 flex items-center gap-2">
+          <img src="https://i.pravatar.cc/40?img=32" class="w-6 h-6 rounded-full" alt="User">
+          SaaS Founder Sarah
+        </div>
+        <h4 class="font-semibold text-lg mt-3">Saved $7,200</h4>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+          3-year auto-renewal found — we recommended a 30-day exit clause. Saved $7,200 instantly.
+        </p>
+        <div class="mt-4 flex items-center gap-2 text-xs text-green-600 font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          Contract risk reduced
+        </div>
+      </div>
+
+      <!-- Case 2 -->
+      <div class="group relative p-8 rounded-2xl bg-gradient-to-br from-blue-900 to-slate-800 text-white shadow-lg hover:-translate-y-2 transition-all duration-300">
+        <div class="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl"></div>
+        <div class="text-sm text-slate-300 flex items-center gap-2">
+          <img src="https://i.pravatar.cc/40?img=13" class="w-6 h-6 rounded-full border border-slate-700" alt="User">
+          Agency Owner Mike
+        </div>
+        <h4 class="font-semibold text-lg mt-3">Avoided bankruptcy risk</h4>
+        <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+          We capped liability to 12 months’ fees — reducing exposure from $120k to $24k.
+        </p>
+        <div class="mt-4 flex items-center gap-2 text-xs text-cyan-300 font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20m10-10H2"/></svg>
+          High-risk clause neutralized
+        </div>
+      </div>
+
+      <!-- Case 3 -->
+      <div class="group relative p-8 bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+        <div class="absolute -bottom-4 -right-4 w-14 h-14 bg-blue-200 rounded-full blur-2xl opacity-40"></div>
+        <div class="text-sm text-slate-500 flex items-center gap-2">
+          <img src="https://i.pravatar.cc/40?img=48" class="w-6 h-6 rounded-full" alt="User">
+          Freelancer Jessica
+        </div>
+        <h4 class="font-semibold text-lg mt-3">Kept her portfolio</h4>
+        <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+          We rewrote a “work-for-hire” clause — preserving her right to reuse project assets.
+        </p>
+        <div class="mt-4 flex items-center gap-2 text-xs text-blue-600 font-medium">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>
+          Ownership restored
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12 md:hidden">
+      <a href="#demo" class="inline-block text-sm px-6 py-3 bg-gradient-to-r from-cyan-400 to-blue-600 text-black rounded-full font-semibold shadow hover:opacity-90 transition">
+        See My Contract Score →
+      </a>
+    </div>
+  </div>
+
+  <!-- floating bg shapes -->
+  <svg class="absolute top-10 right-10 w-28 h-28 text-blue-100 opacity-30 animate-float" fill="currentColor" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="50"/>
+  </svg>
+  <svg class="absolute bottom-0 left-0 w-64 h-64 text-cyan-100 opacity-30 blur-3xl animate-pulse" fill="currentColor" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="20"/>
+  </svg>
+</section>
+
+
+    <!-- Feature Breakdown (Hero Style with Animation) -->
+<section id="features" class="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden">
+  <!-- Background shapes -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-0 right-0 w-72 h-72 bg-indigo-100 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-indigo-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center md:items-start gap-12">
+    <!-- Left: Text -->
+    <div class="flex-1 opacity-0 translate-y-8 transition-all duration-1000 ease-out animate-slide-up">
+      <h2 class="text-3xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
+        What You Get <br />
+        <span class="text-indigo-600">With ContractGuard</span>
+      </h2>
+      <p class="text-slate-600 text-lg mb-8">
+        Every document you upload is analyzed with both AI + rule-based logic — giving you clarity, protection, and negotiation power.
+      </p>
+
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100 hover:scale-[1.02] transition-transform duration-300">
+        <h4 class="font-semibold text-slate-900 text-lg">Your ContractGuard Analysis Includes:</h4>
+        <ul class="mt-4 text-slate-600 space-y-3">
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Risk Score (0–100) — Overall contract safety</li>
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Red Flag Detection — Dangerous clauses</li>
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Financial Impact — Real dollar exposure</li>
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Fix Recommendations — Negotiation-ready wording</li>
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Legal Explainers — Plain English breakdowns</li>
+          <li class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>Negotiation Scripts — What to say to vendors</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right: Comparison Card -->
+    <div class="flex-1 md:max-w-sm w-full opacity-0 translate-y-8 transition-all duration-1000 delay-300 ease-out animate-slide-up">
+      <div class="rounded-2xl bg-slate-900 p-6 shadow-xl text-slate-200 hover:scale-[1.02] transition-transform duration-300">
+        <h4 class="font-semibold text-white text-lg">Vs — Other Options</h4>
+        <ul class="mt-4 space-y-3 text-slate-300">
+          <li class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            Generic AI Tools — “This seems concerning...”
+          </li>
+          <li class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            Reading Yourself — Miss hidden traps
+          </li>
+          <li class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            Lawyers — $300/hour for basic review
+          </li>
+        </ul>
+        <div class="mt-6 border-t border-slate-700 pt-4 text-sm text-slate-400 italic">
+          You shouldn’t need a $300 lawyer to know what you’re signing.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom animations -->
+  <style>
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-up {
+      animation: slideUp 1s ease forwards;
+    }
+  </style>
+</section>
+
+
+<section id="pricing" class="relative py-24 bg-gradient-to-b from-slate-50 to-white text-center overflow-hidden">
+  <!-- Floating shapes background -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute w-48 h-48 bg-cyan-100 rounded-full -top-20 -left-10 blur-3xl opacity-40 animate-pulse"></div>
+    <div class="absolute w-56 h-56 bg-blue-200 rounded-full bottom-0 right-10 blur-3xl opacity-40 animate-pulse delay-1000"></div>
+  </div>
+
+  <div class="relative max-w-6xl mx-auto px-6 z-10">
+    <!-- Heading -->
+    <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 animate-fade-in">
+      Start Protecting Your Business Today
+    </h1>
+    <p class="text-slate-500 text-lg max-w-2xl mx-auto mb-12 animate-fade-in delay-200">
+      Choose a plan that fits your growth — from simple checks to AI-powered contract insights.
+    </p>
+
+    <!-- Pricing cards -->
+    <div class="grid md:grid-cols-3 gap-8 animate-slide-up">
+      
+      <!-- Free Plan -->
+      <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition-all transform hover:-translate-y-2">
+        <div class="text-sm text-slate-500">FREE</div>
+        <div class="mt-2 text-3xl font-bold">$0</div>
+        <ul class="mt-4 text-slate-600 space-y-2">
+          <li>5 contracts / month</li>
+          <li>Basic risk analysis</li>
+          <li>Email reports</li>
+        </ul>
+        <div class="mt-6">
+          <a href="#demo" class="px-5 py-2 rounded-full border border-slate-200 text-sm hover:bg-slate-50 transition-colors">
+            Start Free
+          </a>
+        </div>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="p-6 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl transform hover:-translate-y-3 transition-all relative">
+        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          <span class="bg-white text-blue-700 px-3 py-1 rounded-full text-xs font-semibold shadow">
+            Most Popular
+          </span>
+        </div>
+        <div class="text-sm text-slate-100">PREMIUM</div>
+        <div class="mt-2 text-3xl font-bold">$29<span class="text-sm font-medium">/mo</span></div>
+        <ul class="mt-4 text-slate-50 space-y-2">
+          <li>50 contracts / month</li>
+          <li>Advanced AI analysis</li>
+          <li>Negotiation scripts</li>
+          <li>Priority support</li>
+        </ul>
+        <div class="mt-6">
+          <a href="#pricing" class="px-5 py-2 rounded-full bg-white text-blue-700 font-semibold hover:opacity-90 transition-opacity">
+            Start 7-day trial
+          </a>
+        </div>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition-all transform hover:-translate-y-2">
+        <div class="text-sm text-slate-500">ENTERPRISE</div>
+        <div class="mt-2 text-3xl font-bold">$99<span class="text-sm font-medium">/mo</span></div>
+        <ul class="mt-4 text-slate-600 space-y-2">
+          <li>Unlimited contracts</li>
+          <li>API access</li>
+          <li>White-label reports</li>
+          <li>Dedicated support</li>
+        </ul>
+        <div class="mt-6">
+          <a href="#contact" class="px-5 py-2 rounded-full border border-slate-200 text-sm hover:bg-slate-50 transition-colors">
+            Contact Sales
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Animations -->
+<style>
+  @keyframes fade-in {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  @keyframes slide-up {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  .animate-fade-in { animation: fade-in 1s ease forwards; }
+  .animate-slide-up { animation: slide-up 1s ease forwards; }
+</style>
+
+ <!-- FAQ Hero Section -->
+<section id="faq" class="relative py-24 bg-gradient-to-b from-white to-slate-50 text-center overflow-hidden">
+  <!-- Floating shapes -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute w-48 h-48 bg-cyan-100 rounded-full -top-10 -left-10 blur-3xl opacity-50 animate-pulse"></div>
+    <div class="absolute w-64 h-64 bg-blue-200 rounded-full bottom-0 right-0 blur-3xl opacity-40 animate-pulse delay-1000"></div>
+  </div>
+
+  <div class="relative max-w-4xl mx-auto px-6 z-10">
+    <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 animate-fade-in">
+      Frequently Asked Questions
+    </h1>
+    <p class="text-slate-500 text-lg max-w-2xl mx-auto mb-12 animate-fade-in delay-200">
+      Everything you need to know about how our AI-powered document analysis works — and how it keeps your data safe.
+    </p>
+
+    <!-- FAQ Accordion -->
+    <div class="mt-10 space-y-4 text-left animate-slide-up">
+
+      <!-- Question 1 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Is my data secure?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          Yes. We never store your uploaded documents. The analysis runs securely in-memory and is deleted immediately after processing.
+        </div>
+      </details>
+
+      <!-- Question 2 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9 6 9-6" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17l9 6 9-6" />
+          </svg>
+          How does the AI analysis work?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          Our model scans the document for key clauses, missing terms, and risk factors using both rule-based checks and machine learning models trained on thousands of legal documents.
+        </div>
+      </details>
+
+      <!-- Question 3 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          Can I download a report after scanning?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          Absolutely. Each scan includes a visual summary and a detailed PDF report you can download or share with your team.
+        </div>
+      </details>
+
+      <!-- Question 4 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-2.21 1.79-4 4-4h2v2h-2a2 2 0 00-2 2v6h-2v-6z" />
+          </svg>
+          Who is this tool for?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          Founders, legal teams, freelancers, and anyone dealing with contracts or compliance documents. It saves time, detects issues early, and reduces business risk.
+        </div>
+      </details>
+
+      <!-- Question 5 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2m0 16v2m10-10h-2M4 12H2" />
+          </svg>
+          What makes this different from normal document checkers?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          Traditional tools only highlight words — ours understands meaning, identifies risks, and suggests improvements with context.
+        </div>
+      </details>
+
+      <!-- Question 6 -->
+      <details class="p-5 rounded-2xl bg-white shadow transition-all hover:shadow-md group">
+        <summary class="font-semibold text-slate-800 cursor-pointer text-lg flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-600 group-open:rotate-45 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16" />
+          </svg>
+          Do I need a subscription to use it?
+        </summary>
+        <div class="mt-2 text-slate-600 text-sm leading-relaxed pl-9">
+          You can start for free with up to 5 scans per month. For advanced insights and unlimited reports, you can upgrade anytime.
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- Animations -->
+<style>
+  @keyframes fade-in {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  @keyframes slide-up {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  .animate-fade-in { animation: fade-in 1s ease forwards; }
+  .animate-slide-up { animation: slide-up 1s ease forwards; }
+</style>
+
+    <!-- Final CTA -->
+    <section id="final" class="py-20 bg-gradient-to-r from-cyan-50 to-white">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-extrabold">Stop Guessing, Start Knowing</h2>
+        <p class="mt-3 text-slate-600">Upload your contract — see risks, hidden traps, and negotiation wording in 2 minutes.</p>
+
+        <!-- Risk Reversal Badges -->
+        <div class="flex flex-wrap justify-center gap-6 mt-8 text-sm text-slate-600">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            No credit card required
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            Cancel anytime
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            2-minute analysis
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#demo" class="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-black font-semibold shadow hover:opacity-95 transition-opacity">Scan Your First Contract — Free</a>
+          <a href="#pricing" class="px-6 py-3 rounded-full border border-slate-200 hover:bg-slate-50 transition-colors">See plans</a>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-500">No credit card required • No commitment • Cancel anytime</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow">CG</div>
+          <div>
+            <div class="font-semibold">Clause</div>
+            <div class="text-sm text-slate-500">© 2025 Clause • All rights reserved</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 text-sm text-slate-600">
+          <a href="#" class="hover:underline">Terms</a>
+          <a href="#" class="hover:underline">Privacy</a>
+          <a href="#" class="hover:underline">Docs</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Small scripts: smooth scroll, demo simulation, motion animations -->
+  <script type="module">
+    import { animate, stagger } from 'https://cdn.jsdelivr.net/npm/@motionone/dom/dist/motion.dev.js';
+
+    // Smooth scroll anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    
+    // Demo scan simulation
+    const demoBtn = document.getElementById('cta-scan');
+    const progressBar = document.getElementById('demo-progress-bar');
+    const demoResults = document.getElementById('demo-results');
+    const demoBadge = document.getElementById('demo-badge');
+
+    function runDemo() {
+      // reset
+      progressBar.style.width = '0%';
+      demoBadge.classList.add('hidden');
+      demoResults.querySelectorAll('[data-step]').forEach((el, i) => {
+        el.style.opacity = '0.45';
+      });
+
+      // animate progress
+      let steps = 3;
+      let current = 0;
+      const totalMs = 3500;
+      const stepMs = totalMs / steps;
+      const start = performance.now();
+
+      function frame(now){
+        const elapsed = Math.min(now - start, totalMs);
+        const pct = (elapsed / totalMs) * 100;
+        progressBar.style.width = pct + '%';
+
+        // highlight steps as we pass them
+        const stepIndex = Math.floor((elapsed / totalMs) * steps);
+        demoResults.querySelectorAll('[data-step]').forEach((el, i) => {
+          el.style.opacity = i <= stepIndex ? '1' : '0.45';
+        });
+
+        if(elapsed < totalMs){
+          requestAnimationFrame(frame);
+        } else {
+          // show badge + small pop
+          demoBadge.classList.remove('hidden');
+          // small bounce with motion
+          animate(demoBadge, { transform: ['translateY(8px)', 'translateY(0px)'], opacity: [0,1] }, { duration: 0.5 });
+          
+          // Track successful analysis
+          trackConversion('analysis_complete');
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    
+    
+
+    // Real-time counter for social proof
+    function startCounter() {
+      const counter = document.getElementById('user-counter');
+      if (!counter) return;
+      
+      let count = 512;
+      const interval = setInterval(() => {
+        count += Math.floor(Math.random() * 3);
+        counter.textContent = count;
+      }, 10000); // Update every 10 seconds
+    }
+
+    // Floating notification
+    function showFloatingNotification() {
+      const notification = document.createElement('div');
+      notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+      notification.style.animation = 'floatIn 0.5s ease-out';
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-lg">🎉</span>
+          <div>
+            <div class="font-semibold text-sm">Just saved Sarah $7,200!</div>
+            <div class="text-xs opacity-90">Found auto-renewal trap in vendor contract</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'floatOut 0.5s ease-in';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 500);
+      }, 5000);
+    }
+
+    // Analytics tracking
+    function trackConversion(event, data = {}) {
+      console.log('Conversion tracked:', event, data);
+      
+      // Here you would integrate with your analytics (Google Analytics, etc.)
+      if (typeof gtag !== 'undefined') {
+        gtag('event', event, data);
+      }
+    }
+
+    // Auto-run demo when user lands on demo section
+    const demoAnchorBtns = document.querySelectorAll('a[href="#demo"], #see-action-top, #cta-scan');
+    demoAnchorBtns.forEach(b => {
+      b.addEventListener('click', () => {
+        // small delay to let scroll finish then run demo
+        setTimeout(() => {
+          if (!analysisResults.classList.contains('hidden')) {
+            runDemo();
+          }
+        }, 450);
+      });
+    });
+
+    // Entrance animations for some cards using Motion One
+    const cards = document.querySelectorAll('.glass, .shadow-2xl, .shadow');
+    cards.forEach((c, i) => {
+      animate(c, { opacity: [0,1], transform: ['translateY(16px)','translateY(0px)'] }, { delay: 0.12 * i, duration: 0.6 });
+    });
+
+    // small header badge motion
+    const headerLogo = document.querySelector('header div.w-10');
+    if(headerLogo){
+      animate(headerLogo, { transform: ['rotate(-6deg)', 'rotate(0deg)'] }, { duration: 0.8 });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      startCounter();
+      setTimeout(showFloatingNotification, 8000); // Show after 8 seconds
+      
+      // Show another notification after a while
+      setTimeout(showFloatingNotification, 20000);
+    });
+
+  </script>
+</body>
+</html>
