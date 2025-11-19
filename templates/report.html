@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block title %}Report — Clause{% endblock %}
+{% block body %}
+
+<!-- Top spacing to match hero layout -->
+<div class="pt-24 pb-10 bg-gray-50 min-h-screen">
+
+  <div class="max-w-5xl mx-auto px-6">
+    
+    <!-- PAGE TITLE -->
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-extrabold">Clause Report</h1>
+      <p class="text-slate-600 mt-2">Your contract has been analyzed using AI + Rule Engine</p>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+
+      <!-- CLAUSE TYPE + SUMMARY -->
+      <div>
+        <h2 class="text-2xl font-semibold">{{ ai_result.clause_type }}</h2>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          {{ ai_result.summary }}
+        </p>
+      </div>
+
+      <!-- METRICS GRID -->
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- RISK LEVEL -->
+        <div class="p-5 bg-slate-50 rounded-xl shadow-sm">
+          <h3 class="font-semibold text-lg">Risk Level</h3>
+          <div class="mt-2 text-xl font-bold
+            {% if ai_result.risk_level == 'Low' %}text-green-600
+            {% elif ai_result.risk_level == 'Medium' %}text-yellow-500
+            {% else %}text-red-600{% endif %}">
+            {{ ai_result.risk_level }}
+          </div>
+        </div>
+
+        <!-- CONFIDENCE -->
+        <div class="p-5 bg-slate-50 rounded-xl shadow-sm">
+          <h3 class="font-semibold text-lg">AI Confidence</h3>
+          <div class="w-full h-3 bg-gray-200 rounded-full mt-3">
+            <div class="h-3 bg-blue-500 rounded-full"
+                 style="width: {{ ai_result.confidence * 100 }}%"></div>
+          </div>
+          <p class="mt-2 font-semibold">{{ (ai_result.confidence * 100) | round(1) }}%</p>
+        </div>
+
+        <!-- RULE SCORE -->
+        <div class="p-5 bg-slate-50 rounded-xl shadow-sm">
+          <h3 class="font-semibold text-lg">Rule-Based Score</h3>
+          <p class="text-xl font-bold mt-2">{{ rule_result.risk_score }}/10</p>
+
+          {% if rule_result.flags %}
+          <p class="text-sm text-slate-600 mt-2">
+            <strong>Flags:</strong> {{ rule_result.flags | join(', ') }}
+          </p>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <!-- CHART -->
+      <div class="pt-4">
+        <h3 class="font-semibold text-xl mb-4">Confidence vs Rule Score</h3>
+        <canvas id="comparisonChart" height="140"></canvas>
+      </div>
+
+      <!-- KEY TERMS -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Key Terms</h3>
+        <ul class="list-disc pl-6 text-slate-700">
+          {% for term in ai_result.key_terms %}
+          <li>{{ term }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2">Recommendations</h3>
+        <ul class="list-disc pl-6 text-slate-700">
+          {% for r in ai_result.recommendations %}
+          <li>{{ r }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- NEGOTIATION SCRIPT -->
+      <div>
+        <h3 class="text-xl font-semibold mb-3">Negotiation Script</h3>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+          <!-- Vendor -->
+          <div class="bg-slate-50 rounded-xl p-5 shadow-sm">
+            <h4 class="font-semibold text-lg">Vendor</h4>
+
+            {% if ai_result.negotiation_script.vendor is string %}
+            <p class="mt-2 text-slate-600">{{ ai_result.negotiation_script.vendor }}</p>
+
+            {% else %}
+            <ul class="mt-2 text-slate-700 space-y-1">
+              <li><strong>Initial Position:</strong> {{ ai_result.negotiation_script.vendor.initial_position }}</li>
+              <li><strong>Concessions:</strong> {{ ai_result.negotiation_script.vendor.concessions }}</li>
+              <li><strong>Talking Points:</strong> {{ ai_result.negotiation_script.vendor.talking_points }}</li>
+            </ul>
+            {% endif %}
+          </div>
+
+          <!-- Contract Add/Remove -->
+          <div class="bg-slate-50 rounded-xl p-5 shadow-sm">
+            <h4 class="font-semibold text-lg">Contract Additions</h4>
+            <ul class="list-disc pl-6 text-slate-700 mt-2">
+              {% for add in ai_result.negotiation_script.contract_additions %}
+              <li>{{ add }}</li>
+              {% endfor %}
+            </ul>
+
+            <h4 class="font-semibold text-lg mt-4">Contract Removals</h4>
+            <ul class="list-disc pl-6 text-slate-700 mt-2">
+              {% for remove in ai_result.negotiation_script.contract_removals %}
+              <li>{{ remove }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="flex justify-center gap-4 pt-4">
+        <form action="/download_pdf" method="post">
+          <button class="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow hover:bg-blue-700">Download PDF</button>
+        </form>
+
+        <form action="/analyze" method="get">
+          <button class="px-6 py-3 rounded-full bg-slate-200 text-slate-800 font-semibold shadow hover:bg-slate-300">Analyze Another</button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('comparisonChart');
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['AI Confidence', 'Rule Score'],
+    datasets: [{
+      data: [
+        parseFloat(`{{ ai_result.confidence * 100 | default(0) }}`),
+        parseFloat(`{{ rule_result.risk_score * 10 | default(0) }}`)
+      ],
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false }},
+    scales: { y: { beginAtZero: true, max: 100 } }
+  }
+});
+</script>
+
+{% endblock %}
