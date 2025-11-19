@@ -1,21 +1,40 @@
 import json
 import re
 
-# Keywords for clause type detection
+# Rental Agreement Clause Keywords
 CLAUSE_KEYWORDS = {
-    "Limitation of Liability": ["liability", "limit", "damages"],
-    "Indemnification": ["indemnify", "hold harmless", "defend"],
-    "Termination": ["terminate", "expire", "end"]
+    "Rent Payment": ["rent", "monthly payment", "due date", "late fee", "grace period"],
+    "Security Deposit": ["security deposit", "damage deposit", "refundable", "deduct"],
+    "Maintenance and Repairs": ["maintenance", "repairs", "upkeep", "fix", "property damage"],
+    "Utilities and Services": ["utilities", "water", "electricity", "gas", "internet", "garbage"],
+    "Termination": ["terminate", "end of lease", "notice", "vacate"],
+    "Renewal": ["renew", "extension", "automatic renewal", "renewal term"],
+    "Subletting": ["sublet", "assign", "transfer lease"],
+    "Right of Entry": ["entry", "inspect", "landlord access", "visit"],
+    "Pet Policy": ["pet", "animal", "dog", "cat", "pet fee", "deposit"],
+    "Guest Policy": ["guest", "visitor", "overnight stay"],
+    "Property Condition": ["condition", "move-in", "inspection", "damage report"],
+    "Liability and Insurance": ["liability", "insurance", "coverage"],
+    "Default": ["default", "breach", "non-payment", "failure to comply"]
 }
 
-# High-risk terms
-HIGH_RISK_TERMS = ["unlimited", "capless", "no limit", "full liability", "gross negligence", "willful misconduct"]
+# High-risk / tenant-unfriendly terms
+HIGH_RISK_TERMS = [
+    "unlimited", "no notice", "immediate eviction", "non-refundable",
+    "forfeit", "arbitrary", "sole discretion", "without cause", "no liability",
+    "penalty", "waive rights", "irrevocable", "final and binding"
+]
 
-# One-sided language indicators
-ONE_SIDED_INDICATORS = ["shall", "must", "will", "agrees to", "obligated to"]
+# One-sided landlord language
+ONE_SIDED_INDICATORS = [
+    "tenant shall", "tenant must", "tenant agrees to", "landlord may", "at landlord’s discretion"
+]
 
-# Protective language
-PROTECTIVE_LANGUAGE = ["mutual", "reasonable", "fair", "reciprocal", "limited to"]
+# Protective / balanced language
+PROTECTIVE_LANGUAGE = [
+    "reasonable", "mutual", "both parties", "written notice", "as required by law",
+    "fair", "reciprocal", "limited to", "subject to"
+]
 
 def detect_clause_type(clause_text):
     clause_lower = clause_text.lower()
@@ -28,22 +47,25 @@ def calculate_risk_score(clause_text):
     score = 0
     clause_lower = clause_text.lower()
 
-    # Presence of high-risk terms
+    # High-risk terms
     for term in HIGH_RISK_TERMS:
         if term in clause_lower:
             score += 2
 
-    # One-sided language detection
+    # One-sided language
     one_sided_count = sum(1 for indicator in ONE_SIDED_INDICATORS if indicator in clause_lower)
-    if one_sided_count > 2:
+    if one_sided_count > 1:
         score += 3
 
-    # Missing protective language
-    protective_count = sum(1 for protect in PROTECTIVE_LANGUAGE if protect in clause_lower)
+    # Missing protective terms
+    protective_count = sum(1 for word in PROTECTIVE_LANGUAGE if word in clause_lower)
     if protective_count == 0:
         score += 2
 
-    # Cap the score at 10
+    # Adjust for unknown clauses
+    if detect_clause_type(clause_text) == "Unknown":
+        score += 1
+
     return min(score, 10)
 
 def generate_flags(clause_text):
@@ -51,24 +73,37 @@ def generate_flags(clause_text):
     clause_lower = clause_text.lower()
 
     if any(term in clause_lower for term in HIGH_RISK_TERMS):
-        flags.append("Contains high-risk terms")
+        flags.append("Contains high-risk or tenant-unfriendly language")
 
     one_sided_count = sum(1 for indicator in ONE_SIDED_INDICATORS if indicator in clause_lower)
-    if one_sided_count > 2:
-        flags.append("One-sided language detected")
+    if one_sided_count > 1:
+        flags.append("Clause appears one-sided in favor of the landlord")
 
-    protective_count = sum(1 for protect in PROTECTIVE_LANGUAGE if protect in clause_lower)
+    protective_count = sum(1 for word in PROTECTIVE_LANGUAGE if word in clause_lower)
     if protective_count == 0:
-        flags.append("Missing protective language")
+        flags.append("No protective or mutual language found")
+
+    # Rental-specific red flags
+    if "automatic renewal" in clause_lower:
+        flags.append("Automatic renewal clause detected — verify tenant consent")
+    if "no notice" in clause_lower:
+        flags.append("Missing or unfair notice period")
+    if "non-refundable" in clause_lower:
+        flags.append("Non-refundable deposit may be unfair to tenant")
 
     return flags
 
 def generate_summary(clause_type, risk_score, flags):
-    summary = f"Clause type: {clause_type}. Risk score: {risk_score}/10."
-    if flags:
-        summary += f" Flags: {', '.join(flags)}."
+    summary = f"This clause relates to {clause_type.lower() if clause_type != 'Unknown' else 'an unspecified section of the rental agreement'}. "
+    if risk_score <= 3:
+        summary += "It poses low risk to the tenant."
+    elif risk_score <= 6:
+        summary += "It poses medium risk and should be reviewed for fairness."
     else:
-        summary += " No flags raised."
+        summary += "It poses high risk to the tenant and likely favors the landlord."
+
+    if flags:
+        summary += " Key concerns: " + "; ".join(flags) + "."
     return summary
 
 def analyze_clause_rules(clause_text):
@@ -84,4 +119,5 @@ def analyze_clause_rules(clause_text):
         "summary": summary
     }
 
-    return json.dumps(result)
+    return result
+
