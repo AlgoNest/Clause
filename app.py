@@ -21,7 +21,7 @@ def index():
 @app.route("/analyze", methods=["GET","POST"])
 def analyze():
     if request.method == "POST":
-        text = request.form.get("clause_text")
+        text = request.form.get("contract_text")
         ai_result = run_model(text)
         
         return render_template("report.html", 
