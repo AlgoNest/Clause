@@ -3,5 +3,10 @@
     "name": "Ahmad Hassan",
     "email": "ahmadabuulhassan@gmail.com",
     "password": "scrypt:32768:8:1$Gq9RicVAhWYMNkRF$c2d852bc4c8796546d5f01f812fee9429e059e4a1383ecb1084178f7a27dc26e8a66f609f911bd983909970e5f43ad45f83cdad1bc40d9649da983b1ee0d355f"
+  },
+  {
+    "name": "Ahmad Hassan",
+    "email": "ahmahassan@gmail.com",
+    "password": "scrypt:32768:8:1$a3E2PPrC5WuRpFMg$2e86226b7d1c4dd091fc44669841fc31ef49a07781a30dab492275985bc44b6fad6897072290ab9041926d5bb68ab0cf6c0fd94087cbf4757bac0a750ee692cb"
   }
 ]
