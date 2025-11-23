@@ -1,1 +1,7 @@
-
+[
+  {
+    "name": "Ahmad Hassan",
+    "email": "ahmadabuulhassan@gmail.com",
+    "password": "scrypt:32768:8:1$Gq9RicVAhWYMNkRF$c2d852bc4c8796546d5f01f812fee9429e059e4a1383ecb1084178f7a27dc26e8a66f609f911bd983909970e5f43ad45f83cdad1bc40d9649da983b1ee0d355f"
+  }
+]
