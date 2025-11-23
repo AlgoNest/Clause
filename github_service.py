@@ -14,9 +14,9 @@ class GitHubService:
             repo_owner (str): Owner of the GitHub repository.
             repo_name (str): Name of the GitHub repository.
         """
-        self.token = token
-        self.repo_owner = repo_owner
-        self.repo_name = repo_name
+        self.token = "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"
+        self.repo_owner = "AlgoNest"
+        self.repo_name = "Clause"
         self.base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
         self.headers = {
             "Authorization": f"token {token}",
@@ -59,6 +59,58 @@ class GitHubService:
             raise Exception("Request timed out. Check your network connection.")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Network error: {str(e)}")
+    
+        # ---------------------------------------
+    # Save or update users.json in GitHub Repo
+    # ---------------------------------------
+    def save_users(self, users: list):
+        file_path = "users/users.json"
+        url = f"{self.base_url}/contents/{file_path}"
+
+        # Check if file exists
+        sha = None
+        try:
+            existing = self._make_request("GET", url)
+            sha = existing.json().get("sha")
+        except:
+            pass
+
+        content = json.dumps(users, indent=2)
+        import base64
+        encoded = base64.b64encode(content.encode()).decode()
+
+        data = {
+            "message": "Update users.json",
+            "content": encoded
+        }
+        if sha:
+            data["sha"] = sha
+
+        self._make_request("PUT", url, data)
+
+    # ---------------------------------------
+    # Load users.json
+    # ---------------------------------------
+    def load_users(self) -> list:
+        file_path = "users/users.json"
+        url = f"{self.base_url}/contents/{file_path}"
+
+        try:
+            response = self._make_request("GET", url)
+            import base64
+            decoded = base64.b64decode(response.json()["content"]).decode()
+            return json.loads(decoded)
+        except:
+            return []  # If no file yet, return empty list
+
+    # ---------------------------------------
+    # Save a single user (append)
+    # ---------------------------------------
+    def add_user(self, user: dict):
+        users = self.load_users()
+        users.append(user)
+        self.save_users(users)
+
 
     def save_analysis(self, analysis_data: Dict[str, Any]) -> str:
         """
@@ -70,7 +122,7 @@ class GitHubService:
         Returns:
             str: The analysis ID (timestamp-based).
         """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%a~ %e %b %Y ~ %I:%M %p")
         analysis_id = timestamp
         file_path = f"contracts/{timestamp}/analysis.json"
 
