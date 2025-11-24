@@ -2,54 +2,109 @@
 {% block title %}Login — Clause AI{% endblock %}
 {% block body %}
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; background: #f7f9fc;">
-  <div class="card shadow-sm border-0 p-4" style="width: 380px; border-radius: 18px;">
-    
-    <!-- Heading -->
-    <h3 class="text-center mb-1">Welcome Back</h3>
-    <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">
-      Sign in to your Clause AI account
-    </p>
+<style>
+  body {
+    background: linear-gradient(135deg, #eef2ff, #f8fbff);
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Force full-screen flex center */
+  .full-center {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  /* Fade + slide animation */
+  @keyframes fadeSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .glass-card {
+    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    padding: 35px;
+    width: 380px;
+    animation: fadeSlide 0.7s ease-out forwards;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  }
+
+  .glass-card input {
+    border-radius: 12px !important;
+    padding: 10px 13px !important;
+  }
+
+  .btn-cta {
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: 0.2s;
+  }
+
+  .btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 86, 255, 0.3);
+  }
+
+  .subtle {
+    font-size: 0.9rem;
+    color: #6c6c6c;
+  }
+</style>
+
+<!-- FORCED CENTER WRAPPER -->
+<div class="full-center">
+  <div class="glass-card">
+
+    <h2 class="text-center mb-1" style="font-weight: 700;">Welcome Back</h2>
+    <p class="text-center subtle mb-4">Login to your Clause AI account</p>
 
     <form action="/login" method="POST">
 
-      <!-- Email -->
       <div class="form-group mb-3">
         <label class="fw-semibold">Email</label>
-        <input type="email" class="form-control py-2" 
-               name="email" placeholder="you@example.com" required
-               style="border-radius: 10px;">
+        <input type="email" class="form-control" name="email" required placeholder="you@example.com">
       </div>
 
-      <!-- Password -->
       <div class="form-group mb-3">
         <label class="fw-semibold">Password</label>
-        <input type="password" class="form-control py-2" 
-               name="password" placeholder="••••••••" required
-               style="border-radius: 10px;">
+        <input type="password" class="form-control" name="password" required placeholder="••••••••">
       </div>
 
-      <!-- Forgot Password -->
       <div class="text-end mb-3">
-        <a href="/forgot-password" class="text-decoration-none" style="font-size: 0.9rem;">
-          Forgot password?
-        </a>
+        <a href="/forgot-password" class="subtle text-decoration-none">Forgot password?</a>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit" 
-              class="btn w-100 py-2" 
-              style="background: #0056ff; color: white; border-radius: 10px; font-weight: 600;">
+      <button type="submit" class="btn btn-primary w-100 py-2 btn-cta" style="background: #0056ff;">
         Login
       </button>
 
-      <!-- Signup Link -->
-      <p class="text-center mt-4" style="font-size: 0.95rem;">
-        Not registered yet?
+      <p class="text-center mt-3 subtle">
+        New to Clause AI?  
         <a href="/signup" class="fw-semibold">Create an account</a>
       </p>
 
     </form>
+
   </div>
 </div>
 
