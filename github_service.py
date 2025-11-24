@@ -3,41 +3,26 @@ import os
 import requests
 from datetime import datetime
 from typing import Dict, Any, List, Optional
+import base64
 
 class GitHubService:
     def __init__(self, token: str, repo_owner: str, repo_name: str):
         """
         Initialize GitHub service with authentication and repository details.
-
-        Args:
-            token (str): GitHub personal access token.
-            repo_owner (str): Owner of the GitHub repository.
-            repo_name (str): Name of the GitHub repository.
         """
-        self.token = "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"
-        self.repo_owner = "AlgoNest"
-        self.repo_name = "Clause"
+        self.token = token  # Use the passed token (from ENV variable)
+        self.repo_owner = repo_owner
+        self.repo_name = repo_name
         self.base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
         self.headers = {
-            "Authorization": f"token {token}",
+            "Authorization": f"token {self.token}",
             "Accept": "application/vnd.github.v3+json"
         }
 
-    def _make_request(self, method: str, url: str, data: Optional[Dict] = None) -> requests.Response:
-        """
-        Make a request to GitHub API with error handling.
-
-        Args:
-            method (str): HTTP method (GET, PUT, etc.).
-            url (str): API endpoint URL.
-            data (Optional[Dict]): JSON data for POST/PUT requests.
-
-        Returns:
-            requests.Response: The response object.
-
-        Raises:
-            Exception: For network errors, rate limits, etc.
-        """
+    # ---------------------------
+    # Make HTTP request
+    # ---------------------------
+    def _make_request(self, method: str, url: str, data: Optional[dict] = None) -> requests.Response:
         try:
             if method.upper() == "GET":
                 response = requests.get(url, headers=self.headers, timeout=30)
@@ -47,36 +32,56 @@ class GitHubService:
                 raise ValueError(f"Unsupported HTTP method: {method}")
 
             if response.status_code == 403 and 'rate limit' in response.text.lower():
-                raise Exception("GitHub API rate limit exceeded. Please try again later.")
+                raise Exception("GitHub API rate limit exceeded. Try later.")
             elif response.status_code == 404:
-                raise Exception("Repository or file not found.")
+                return None
             elif not response.ok:
                 raise Exception(f"GitHub API error: {response.status_code} - {response.text}")
 
             return response
-
         except requests.exceptions.Timeout:
-            raise Exception("Request timed out. Check your network connection.")
+            raise Exception("Request timed out.")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Network error: {str(e)}")
-    
-        # ---------------------------------------
-    # Save or update users.json in GitHub Repo
-    # ---------------------------------------
-    def save_users(self, users: list):
-        file_path = "users/users.json"
+
+    # ---------------------------
+    # Load all users
+    # ---------------------------
+    def load_users(self) -> List[dict]:
+        file_path = "users.json"  # Root level file
         url = f"{self.base_url}/contents/{file_path}"
 
-        # Check if file exists
-        sha = None
+        response = self._make_request("GET", url)
+        if response is None:
+            return []  # File does not exist yet
+
+        content = response.json().get("content", "")
+        if not content:
+            return []
+
+        decoded = base64.b64decode(content).decode()
         try:
-            existing = self._make_request("GET", url)
-            sha = existing.json().get("sha")
+            users = json.loads(decoded)
+            if isinstance(users, list):
+                return users
+            return []
         except:
-            pass
+            return []
+
+    # ---------------------------
+    # Save users list
+    # ---------------------------
+    def save_users(self, users: List[dict]):
+        file_path = "users.json"
+        url = f"{self.base_url}/contents/{file_path}"
+
+        # Check for existing SHA
+        sha = None
+        response = self._make_request("GET", url)
+        if response is not None:
+            sha = response.json().get("sha")
 
         content = json.dumps(users, indent=2)
-        import base64
         encoded = base64.b64encode(content.encode()).decode()
 
         data = {
@@ -88,136 +93,59 @@ class GitHubService:
 
         self._make_request("PUT", url, data)
 
-    # ---------------------------------------
-    # Load users.json
-    # ---------------------------------------
-    def load_users(self) -> list:
-        file_path = "users/users.json"
-        url = f"{self.base_url}/contents/{file_path}"
-
-        try:
-            response = self._make_request("GET", url)
-            import base64
-            decoded = base64.b64decode(response.json()["content"]).decode()
-            return json.loads(decoded)
-        except:
-            return []  # If no file yet, return empty list
-
-    # ---------------------------------------
-    # Save a single user (append)
-    # ---------------------------------------
+    # ---------------------------
+    # Add single user
+    # ---------------------------
     def add_user(self, user: dict):
         users = self.load_users()
         users.append(user)
         self.save_users(users)
 
-
+    # ---------------------------
+    # Save analysis data
+    # ---------------------------
     def save_analysis(self, analysis_data: Dict[str, Any]) -> str:
-        """
-        Save analysis data to GitHub repository as a JSON file.
-
-        Args:
-            analysis_data (Dict[str, Any]): The analysis data to save.
-
-        Returns:
-            str: The analysis ID (timestamp-based).
-        """
-        timestamp = datetime.now().strftime("%a~ %e %b %Y ~ %I:%M %p")
-        analysis_id = timestamp
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         file_path = f"contracts/{timestamp}/analysis.json"
-
-        # Create the directory structure implicitly by creating the file
         url = f"{self.base_url}/contents/{file_path}"
 
-        # Check if file exists to get SHA for update
-        sha = None
-        try:
-            existing_response = self._make_request("GET", url)
-            sha = existing_response.json().get("sha")
-        except Exception:
-            # File doesn't exist, which is fine for creation
-            pass
-
-        # Prepare the content
         content = json.dumps(analysis_data, indent=2)
-        import base64
-        encoded_content = base64.b64encode(content.encode()).decode()
+        encoded = base64.b64encode(content.encode()).decode()
 
         data = {
-            "message": f"Add analysis for {analysis_id}",
-            "content": encoded_content
+            "message": f"Add analysis {timestamp}",
+            "content": encoded
         }
-        if sha:
-            data["sha"] = sha
+
+        # Check SHA
+        response = self._make_request("GET", url)
+        if response is not None:
+            data["sha"] = response.json().get("sha")
 
         self._make_request("PUT", url, data)
-        return analysis_id
+        return timestamp
 
+    # ---------------------------
+    # Get analysis data
+    # ---------------------------
     def get_analysis(self, analysis_id: str) -> Dict[str, Any]:
-        """
-        Retrieve a specific analysis by ID.
-
-        Args:
-            analysis_id (str): The analysis ID (timestamp).
-
-        Returns:
-            Dict[str, Any]: The analysis data.
-        """
         file_path = f"contracts/{analysis_id}/analysis.json"
         url = f"{self.base_url}/contents/{file_path}"
 
         response = self._make_request("GET", url)
         content = response.json()["content"]
-        import base64
-        decoded_content = base64.b64decode(content).decode()
-        return json.loads(decoded_content)
+        decoded = base64.b64decode(content).decode()
+        return json.loads(decoded)
 
+    # ---------------------------
+    # List all analyses
+    # ---------------------------
     def list_analyses(self) -> List[str]:
-        """
-        List all analysis IDs (timestamps) in the repository.
-
-        Returns:
-            List[str]: List of analysis IDs.
-        """
         url = f"{self.base_url}/contents/contracts"
-        try:
-            response = self._make_request("GET", url)
-            items = response.json()
-            analysis_ids = []
-            for item in items:
-                if item["type"] == "dir":
-                    analysis_ids.append(item["name"])
-            return sorted(analysis_ids, reverse=True)  # Most recent first
-        except Exception as e:
-            if "404" in str(e):
-                return []  # No contracts directory yet
-            raise
+        response = self._make_request("GET", url)
+        if response is None:
+            return []
 
-    def list_analyses_with_data(self) -> List[Dict[str, Any]]:
-        """
-        List all analyses with their full data for dashboard display.
-
-        Returns:
-            List[Dict[str, Any]]: List of analysis data dictionaries.
-        """
-        analysis_ids = self.list_analyses()
-        analyses = []
-
-        for analysis_id in analysis_ids:
-            try:
-                analysis_data = self.get_analysis(analysis_id)
-                # Add the ID to the data for reference
-                analysis_data['analysis_id'] = analysis_id
-                analyses.append(analysis_data)
-            except Exception as e:
-                # Skip analyses that can't be loaded
-                print(f"Warning: Could not load analysis {analysis_id}: {e}")
-                continue
-
-        return analyses
-
-# Example usage:
-# service = GitHubService(token="your_token", repo_owner="your_owner", repo_name="your_repo")
-# analysis_id = service.save_analysis({"clause_type": "Limitation of Liability", ...})
-# analysis = service.get_analysis(analysis_id)
-# analyses = service.list_analyses()
+        items = response.json()
+        dirs = [i["name"] for i in items if i["type"] == "dir"]
+        return sorted(dirs, reverse=True)
