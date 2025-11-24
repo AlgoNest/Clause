@@ -5,17 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signup — Clause AI</title>
-
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
+    /* Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #eef1ff, #ffffff);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #eef1ff, #ffffff);
       overflow: hidden;
     }
 
@@ -23,7 +23,6 @@
     .shape {
       position: absolute;
       opacity: 0.12;
-      animation-iteration-count: infinite;
     }
 
     .doc { top: 8%; left: 10%; width: 100px; animation: floatLeft 8s ease-in-out infinite; }
@@ -31,30 +30,32 @@
     .check { top: 20%; right: 25%; width: 70px; animation: floatUp 6s ease-in-out infinite; }
 
     @keyframes floatLeft {
-      0%, 100% { transform: translateX(0) translateY(0); }
+      0%,100% { transform: translateX(0) translateY(0); }
       50% { transform: translateX(-15px) translateY(-10px); }
     }
     @keyframes floatRight {
-      0%, 100% { transform: translateX(0) translateY(0); }
+      0%,100% { transform: translateX(0) translateY(0); }
       50% { transform: translateX(15px) translateY(-10px); }
     }
     @keyframes floatUp {
-      0%, 100% { transform: translateY(0); }
+      0%,100% { transform: translateY(0); }
       50% { transform: translateY(-15px); }
     }
 
-    /* Wrapper */
+    /* Wrapper for perfect centering */
     .wrapper {
       text-align: center;
+      max-width: 400px;
+      width: 100%;
       animation: fadeIn 0.7s ease-out forwards;
     }
 
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(40px); }
+      0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Big heading */
+    /* Heading */
     .main-heading {
       font-size: 38px;
       font-weight: 700;
@@ -68,9 +69,8 @@
       margin-bottom: 40px;
     }
 
-    /* Form card */
+    /* Card */
     .form-card {
-      width: 380px;
       padding: 35px;
       background: #ffffff;
       border-radius: 18px;
@@ -113,8 +113,8 @@
       border-radius: 10px;
       font-size: 17px;
       cursor: pointer;
-      transition: 0.2s ease;
       font-weight: 600;
+      transition: 0.2s ease;
     }
 
     button:hover {
@@ -133,27 +133,24 @@
       font-weight: 500;
     }
 
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
 
   </style>
 </head>
 
 <body>
-
-  <!-- Floating icons representing contracts/AI -->
+  <!-- Floating Icons -->
   <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape doc" alt="Document">
   <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape pen" alt="Pen">
   <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="shape check" alt="Checkmark">
 
+  <!-- Centered form wrapper -->
   <div class="wrapper">
     <h1 class="main-heading">Review Your Rental Contracts Smarter</h1>
     <p class="subtext">Join Clause AI and manage your contracts with confidence.</p>
 
     <div class="form-card">
       <form method="POST" action="/signup">
-
         <label for="name">Full Name</label>
         <input type="text" id="name" name="name" required>
 
@@ -171,7 +168,5 @@
       </form>
     </div>
   </div>
-
 </body>
 </html>
-
