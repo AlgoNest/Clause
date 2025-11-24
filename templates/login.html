@@ -5,47 +5,97 @@
 <style>
   body {
     background: linear-gradient(135deg, #eef2ff, #f8fbff);
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Force full-screen flex center */
-  .full-center {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    padding: 0;
-    margin: 0;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
 
-  /* Fade + slide animation */
-  @keyframes fadeSlide {
-    0% {
-      opacity: 0;
-      transform: translateY(25px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Perfect center wrapper */
+  .full-center {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
+  /* Glass card */
   .glass-card {
     backdrop-filter: blur(14px);
     background: rgba(255, 255, 255, 0.75);
     border-radius: 20px;
     padding: 35px;
     width: 380px;
-    animation: fadeSlide 0.7s ease-out forwards;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    z-index: 10;
+    animation: fadeSlide 0.8s ease-out forwards;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  @keyframes fadeSlide {
+    0% { opacity: 0; transform: translateY(25px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Floating shapes animation */
+  @keyframes float {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+  }
+
+  .shape {
+    position: absolute;
+    opacity: 0.35;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Document Shape */
+  .doc-shape {
+    width: 130px;
+    height: 160px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    top: 10%;
+    left: 8%;
+    transform: rotate(-12deg);
+  }
+
+  /* Pen Shape */
+  .pen-shape {
+    width: 12px;
+    height: 180px;
+    background: #0056ff;
+    border-radius: 6px;
+    top: 40%;
+    right: 15%;
+    transform: rotate(20deg);
+  }
+
+  /* Laptop Shape */
+  .laptop-shape {
+    width: 200px;
+    height: 130px;
+    border: 3px solid #333;
+    border-radius: 10px;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%) rotate(2deg);
+    background: white;
+    animation-delay: 1s;
+  }
+
+  /* Inside screen */
+  .laptop-shape:before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 20px;
+    background: #eef2ff;
+    border-radius: 6px;
   }
 
   .glass-card input {
@@ -71,10 +121,15 @@
   }
 </style>
 
-<!-- FORCED CENTER WRAPPER -->
 <div class="full-center">
-  <div class="glass-card">
 
+  <!-- Shapes -->
+  <div class="shape doc-shape"></div>
+  <div class="shape pen-shape"></div>
+  <div class="shape laptop-shape"></div>
+
+  <!-- Login Card -->
+  <div class="glass-card">
     <h2 class="text-center mb-1" style="font-weight: 700;">Welcome Back</h2>
     <p class="text-center subtle mb-4">Login to your Clause AI account</p>
 
@@ -104,7 +159,6 @@
       </p>
 
     </form>
-
   </div>
 </div>
 
