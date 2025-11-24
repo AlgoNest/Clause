@@ -36,7 +36,7 @@ def analyze():
 gh = GitHubService(
     token="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",
     repo_owner="AlgoNest",
-    repo_name="Clause"
+    repo_name="ClauseDB"
 )
 
 # ---------------------------
