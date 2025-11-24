@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signup</title>
+  <title>Login</title>
 
   <style>
     body {
@@ -157,14 +157,11 @@
   <img src="https://cdn-icons-png.flaticon.com/512/681/681392.png" class="shape three">
 
   <div class="wrapper">
-    <h1 class="main-heading">Create Your Account</h1>
-    <p class="subtext">Join us and start using Clause AI with ease.</p>
+    <h1 class="main-heading">Welcome Back</h1>
+    <p class="subtext">Login to continue using Clause AI</p>
 
     <div class="form-card">
-      <form method="POST" action="/signup">
-
-        <label for="name">Full Name</label>
-        <input type="text" id="name" name="name" required>
+      <form method="POST" action="/login">
 
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" required>
@@ -172,10 +169,10 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="submit">Sign Up</button>
+        <button type="submit">Login</button>
 
         <p class="footer-text">
-          Already have an account? <a href="/login">Login</a>
+          Don't have an account? <a href="/signup">Sign up</a>
         </p>
       </form>
     </div>
