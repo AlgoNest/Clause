@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup — Clause AI</title>
 
   <style>
     body {
@@ -19,39 +19,28 @@
       overflow: hidden;
     }
 
-    /* Floating decorative shapes */
+    /* Floating shapes */
     .shape {
       position: absolute;
-      opacity: 0.1;
-      animation: float 6s ease-in-out infinite;
-      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.1));
+      opacity: 0.12;
+      animation-iteration-count: infinite;
     }
 
-    .shape.one {
-      top: 10%;
-      left: 8%;
-      width: 110px;
-      animation-duration: 7s;
-    }
+    .doc { top: 8%; left: 10%; width: 100px; animation: floatLeft 8s ease-in-out infinite; }
+    .pen { bottom: 12%; right: 10%; width: 90px; animation: floatRight 7s ease-in-out infinite; }
+    .check { top: 20%; right: 25%; width: 70px; animation: floatUp 6s ease-in-out infinite; }
 
-    .shape.two {
-      bottom: 12%;
-      right: 10%;
-      width: 100px;
-      animation-duration: 9s;
+    @keyframes floatLeft {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-15px) translateY(-10px); }
     }
-
-    .shape.three {
-      top: 18%;
-      right: 25%;
-      width: 120px;
-      animation-duration: 8s;
+    @keyframes floatRight {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(15px) translateY(-10px); }
     }
-
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-25px); }
-      100% { transform: translateY(0); }
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
     }
 
     /* Wrapper */
@@ -70,17 +59,16 @@
       font-size: 38px;
       font-weight: 700;
       color: #252525;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
+      margin-bottom: 15px;
     }
 
     .subtext {
-      font-size: 15px;
+      font-size: 16px;
       color: #555;
       margin-bottom: 40px;
     }
 
-    /* Card form */
+    /* Form card */
     .form-card {
       width: 380px;
       padding: 35px;
@@ -88,6 +76,8 @@
       border-radius: 18px;
       box-shadow: 0 0 40px rgba(0, 0, 0, 0.07);
       text-align: left;
+      position: relative;
+      z-index: 10;
     }
 
     label {
@@ -109,15 +99,15 @@
     }
 
     input:focus {
-      border-color: #6c63ff;
+      border-color: #0056ff;
       outline: none;
-      box-shadow: 0 0 10px rgba(108, 99, 255, 0.25);
+      box-shadow: 0 0 10px rgba(0, 86, 255, 0.25);
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #6c63ff;
+      background: #0056ff;
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -128,7 +118,7 @@
     }
 
     button:hover {
-      background: #5a54db;
+      background: #0041cc;
     }
 
     .footer-text {
@@ -138,7 +128,7 @@
     }
 
     a {
-      color: #6c63ff;
+      color: #0056ff;
       text-decoration: none;
       font-weight: 500;
     }
@@ -146,19 +136,20 @@
     a:hover {
       text-decoration: underline;
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- Shapes -->
-  <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape one">
-  <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape two">
-  <img src="https://cdn-icons-png.flaticon.com/512/681/681392.png" class="shape three">
+  <!-- Floating icons representing contracts/AI -->
+  <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape doc" alt="Document">
+  <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape pen" alt="Pen">
+  <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="shape check" alt="Checkmark">
 
   <div class="wrapper">
-    <h1 class="main-heading">Create Your Account</h1>
-    <p class="subtext">Join us and start using Clause AI with ease.</p>
+    <h1 class="main-heading">Review Your Rental Contracts Smarter</h1>
+    <p class="subtext">Join Clause AI and manage your contracts with confidence.</p>
 
     <div class="form-card">
       <form method="POST" action="/signup">
@@ -183,3 +174,4 @@
 
 </body>
 </html>
+
