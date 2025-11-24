@@ -34,7 +34,7 @@ def analyze():
         return render_template("analyze.html")
 
 gh = GitHubService(
-    token="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",
+    token="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",
     repo_owner="AlgoNest",
     repo_name="ClauseDB"
 )
