@@ -1,160 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Clause AI</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #eef1ff, #ffffff);
-      overflow: hidden;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      height:100%; font-family:"Poppins",sans-serif;
+      background: linear-gradient(135deg,#eef1ff,#ffffff);
+      display:flex; justify-content:center; align-items:center; overflow:hidden;
     }
 
-    /* Floating decorative shapes */
-    .shape {
-      position: absolute;
-      opacity: 0.1;
-      animation: float 6s ease-in-out infinite;
-      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.1));
-    }
+    .shape { position:absolute; opacity:0.12; }
+    .doc {top:8%; left:10%; width:100px; animation: floatLeft 8s ease-in-out infinite;}
+    .pen {bottom:12%; right:10%; width:90px; animation: floatRight 7s ease-in-out infinite;}
+    .check {top:20%; right:25%; width:70px; animation: floatUp 6s ease-in-out infinite;}
+    @keyframes floatLeft{0%,100%{transform:translateX(0) translateY(0);}50%{transform:translateX(-15px) translateY(-10px);}}
+    @keyframes floatRight{0%,100%{transform:translateX(0) translateY(0);}50%{transform:translateX(15px) translateY(-10px);}}
+    @keyframes floatUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
 
-    .shape.one {
-      top: 10%;
-      left: 8%;
-      width: 110px;
-      animation-duration: 7s;
-    }
+    .wrapper {text-align:center; max-width:400px; width:100%; animation:fadeIn 0.7s ease-out forwards;}
+    @keyframes fadeIn{0%{opacity:0; transform:translateY(30px);}100%{opacity:1; transform:translateY(0);}}
 
-    .shape.two {
-      bottom: 12%;
-      right: 10%;
-      width: 100px;
-      animation-duration: 9s;
-    }
+    .main-heading{font-size:38px; font-weight:700; color:#252525; margin-bottom:15px;}
+    .subtext{font-size:16px; color:#555; margin-bottom:40px;}
+    .form-card{padding:35px; background:#fff; border-radius:18px; box-shadow:0 0 40px rgba(0,0,0,0.07); text-align:left; position:relative; z-index:10;}
 
-    .shape.three {
-      top: 18%;
-      right: 25%;
-      width: 120px;
-      animation-duration: 8s;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-25px); }
-      100% { transform: translateY(0); }
-    }
-
-    /* Wrapper */
-    .wrapper {
-      text-align: center;
-      animation: fadeIn 0.7s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(40px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Big heading */
-    .main-heading {
-      font-size: 38px;
-      font-weight: 700;
-      color: #252525;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
-    }
-
-    .subtext {
-      font-size: 15px;
-      color: #555;
-      margin-bottom: 40px;
-    }
-
-    /* Card form */
-    .form-card {
-      width: 380px;
-      padding: 35px;
-      background: #ffffff;
-      border-radius: 18px;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.07);
-      text-align: left;
-    }
-
-    label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: block;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 20px;
-      border: 1px solid #dcdcdc;
-      border-radius: 10px;
-      font-size: 15px;
-      transition: 0.2s ease;
-    }
-
-    input:focus {
-      border-color: #6c63ff;
-      outline: none;
-      box-shadow: 0 0 10px rgba(108, 99, 255, 0.25);
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #6c63ff;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-      cursor: pointer;
-      transition: 0.2s ease;
-      font-weight: 600;
-    }
-
-    button:hover {
-      background: #5a54db;
-    }
-
-    .footer-text {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    a {
-      color: #6c63ff;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    label{font-size:14px; font-weight:600; margin-bottom:6px; display:block; color:#333;}
+    input{width:100%; padding:12px 15px; margin-bottom:20px; border:1px solid #dcdcdc; border-radius:10px; font-size:15px; transition:0.2s ease;}
+    input:focus{border-color:#0056ff; outline:none; box-shadow:0 0 10px rgba(0,86,255,0.25);}
+    button{width:100%; padding:12px; background:#0056ff; color:#fff; border:none; border-radius:10px; font-size:17px; cursor:pointer; font-weight:600; transition:0.2s ease;}
+    button:hover{background:#0041cc;}
+    .footer-text{margin-top:15px; text-align:center; font-size:14px;}
+    a{color:#0056ff; text-decoration:none; font-weight:500;}
+    a:hover{text-decoration:underline;}
   </style>
 </head>
-
 <body>
-
-  <!-- Shapes -->
-  <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape one">
-  <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape two">
-  <img src="https://cdn-icons-png.flaticon.com/512/681/681392.png" class="shape three">
+  <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape doc" alt="Document">
+  <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape pen" alt="Pen">
+  <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="shape check" alt="Check">
 
   <div class="wrapper">
     <h1 class="main-heading">Welcome Back</h1>
@@ -162,7 +48,6 @@
 
     <div class="form-card">
       <form method="POST" action="/login">
-
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" required>
 
@@ -171,12 +56,9 @@
 
         <button type="submit">Login</button>
 
-        <p class="footer-text">
-          Don't have an account? <a href="/signup">Sign up</a>
-        </p>
+        <p class="footer-text">Don't have an account? <a href="/signup">Sign up</a></p>
       </form>
     </div>
   </div>
-
 </body>
 </html>
