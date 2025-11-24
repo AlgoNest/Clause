@@ -1,49 +1,106 @@
 {% extends "layout.html" %}
-{% block title %}Login — Clause AI{% endblock %}
+{% block title %}Sign Up — Clause AI{% endblock %}
 {% block body %}
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; background: #f5f7fb;">
-  <div class="card shadow-lg border-0 p-4" style="width: 420px; border-radius: 22px;">
-    
-    
+<style>
+  /* Background gradient */
+  body {
+    background: linear-gradient(135deg, #eef2ff, #f8fbff);
+  }
 
-    <form action="/login" method="POST">
+  /* Fade + slide animation */
+  @keyframes fadeSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Glass card */
+  .glass-card {
+    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    padding: 35px;
+    width: 400px;
+    animation: fadeSlide 0.7s ease-out forwards;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  }
+
+  .glass-card input {
+    border-radius: 12px !important;
+    padding: 10px 13px !important;
+  }
+
+  .glass-card button {
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .subtle {
+    font-size: 0.9rem;
+    color: #6c6c6c;
+  }
+
+  /* Hover animation on button */
+  .btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 86, 255, 0.3);
+  }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+  <div class="glass-card">
+
+    <h2 class="text-center mb-1" style="font-weight: 700;">Create Account</h2>
+    <p class="text-center subtle mb-4">Join Clause AI to review your contracts smarter</p>
+
+    <form action="/signup" method="POST">
+
+      <!-- Name -->
+      <div class="form-group mb-3">
+        <label class="fw-semibold">Full Name</label>
+        <input type="text" class="form-control" name="name" placeholder="John Doe" required>
+      </div>
 
       <!-- Email -->
       <div class="form-group mb-3">
-        <label class="fw-bold">Email</label>
-        <input type="email" class="form-control py-2" name="email" placeholder="you@example.com" required style="border-radius: 12px;">
+        <label class="fw-semibold">Email</label>
+        <input type="email" class="form-control" name="email" placeholder="you@example.com" required>
       </div>
 
       <!-- Password -->
       <div class="form-group mb-3">
-        <label class="fw-bold">Password</label>
-        <input type="password" class="form-control py-2" name="password" placeholder="••••••••" required style="border-radius: 12px;">
+        <label class="fw-semibold">Password</label>
+        <input type="password" class="form-control" name="password" placeholder="Create a password" required>
       </div>
 
-      <!-- Forgot Password -->
-      <div class="text-end mb-3">
-        <a href="/forgot-password" class="text-decoration-none" style="font-size: 0.9rem;">Forgot password?</a>
+      <!-- Confirm -->
+      <div class="form-group mb-4">
+        <label class="fw-semibold">Confirm Password</label>
+        <input type="password" class="form-control" name="confirm_password" placeholder="Re-enter password" required>
       </div>
 
-      <!-- Login Button -->
-      <button type="submit" class="btn w-100 py-2" style="background: #0066ff; border-radius: 12px; color: white; font-weight: 600;">
-        Login
+      <!-- Button -->
+      <button type="submit" 
+              class="btn btn-primary w-100 py-2 btn-cta"
+              style="background: #0056ff;">
+        Create Account
       </button>
 
-      <!-- Divider -->
-      <div class="text-center my-3">
-        <span class="text-muted" style="font-size: 0.85rem;">or</span>
-      </div>
-
-
-      <!-- Signup Link -->
-      <p class="text-center mt-4" style="font-size: 0.95rem;">
-        New to Clause AI?
-        <a href="/signup" class="fw-semibold">Create an account</a>
+      <!-- Login link -->
+      <p class="text-center mt-3 subtle">
+        Already have an account?
+        <a href="/login" class="fw-semibold">Log in</a>
       </p>
 
     </form>
+
   </div>
 </div>
 
