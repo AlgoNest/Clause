@@ -45,56 +45,35 @@ gh = GitHubService(
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
+        name = request.form["name"]
+        email = request.form["email"]
+        password = generate_password_hash(request.form["password"])
 
         users = gh.load_users()
+        if any(u["email"] == email for u in users):
+            flash("Email already exists!")
+            return redirect("/signup")
 
-        # Check if email exists
-        for u in users:
-            if u["email"] == email:
-                flash("Email already exists!")
-                return redirect("/signup")
-
-        hashed = generate_password_hash(password)
-
-        new_user = {
-            "name": name,
-            "email": email,
-            "password": hashed
-        }
-
-        gh.add_user(new_user)
-        flash("Thanks for signup!")
-        return redirect("/analyze")
-
+        gh.add_user({"name": name, "email": email, "password": password})
+        flash("Signup successful!")
+        return redirect("/login")
     return render_template("signup.html")
 
-
-# ---------------------------
-# Login
-# ---------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+        email = request.form["email"]
+        password = request.form["password"]
 
         users = gh.load_users()
-
-        for u in users:
-            if u["email"] == email and check_password_hash(u["password"], password):
-                session["user_email"] = u["email"]
-                session["user_name"] = u["name"]
-                return redirect("/analyze")
-
+        user = next((u for u in users if u["email"] == email), None)
+        if user and check_password_hash(user["password"], password):
+            session["user_email"] = user["email"]
+            session["user_name"] = user["name"]
+            return redirect("/analyze")
         flash("Invalid email or password!")
         return redirect("/login")
-
     return render_template("login.html")
-
-
 # ---------------------------
 # Dashboard
 # ---------------------------
