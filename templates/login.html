@@ -1,165 +1,185 @@
-{% extends "layout.html" %}
-{% block title %}Login — Clause AI{% endblock %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-  body {
-    background: linear-gradient(135deg, #eef2ff, #f8fbff);
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-  }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup</title>
 
-  /* Perfect center wrapper */
-  .full-center {
-    position: relative;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #eef1ff, #ffffff);
+      overflow: hidden;
+    }
 
-  /* Glass card */
-  .glass-card {
-    backdrop-filter: blur(14px);
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 20px;
-    padding: 35px;
-    width: 380px;
-    z-index: 10;
-    animation: fadeSlide 0.8s ease-out forwards;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-  }
+    /* Floating decorative shapes */
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
+      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.1));
+    }
 
-  @keyframes fadeSlide {
-    0% { opacity: 0; transform: translateY(25px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+    .shape.one {
+      top: 10%;
+      left: 8%;
+      width: 110px;
+      animation-duration: 7s;
+    }
 
-  /* Floating shapes animation */
-  @keyframes float {
-    0%   { transform: translateY(0px); }
-    50%  { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
+    .shape.two {
+      bottom: 12%;
+      right: 10%;
+      width: 100px;
+      animation-duration: 9s;
+    }
 
-  .shape {
-    position: absolute;
-    opacity: 0.35;
-    animation: float 6s ease-in-out infinite;
-  }
+    .shape.three {
+      top: 18%;
+      right: 25%;
+      width: 120px;
+      animation-duration: 8s;
+    }
 
-  /* Document Shape */
-  .doc-shape {
-    width: 130px;
-    height: 160px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.08);
-    top: 10%;
-    left: 8%;
-    transform: rotate(-12deg);
-  }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-25px); }
+      100% { transform: translateY(0); }
+    }
 
-  /* Pen Shape */
-  .pen-shape {
-    width: 12px;
-    height: 180px;
-    background: #0056ff;
-    border-radius: 6px;
-    top: 40%;
-    right: 15%;
-    transform: rotate(20deg);
-  }
+    /* Wrapper */
+    .wrapper {
+      text-align: center;
+      animation: fadeIn 0.7s ease-out forwards;
+    }
 
-  /* Laptop Shape */
-  .laptop-shape {
-    width: 200px;
-    height: 130px;
-    border: 3px solid #333;
-    border-radius: 10px;
-    bottom: 8%;
-    left: 50%;
-    transform: translateX(-50%) rotate(2deg);
-    background: white;
-    animation-delay: 1s;
-  }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-  /* Inside screen */
-  .laptop-shape:before {
-    content: "";
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 20px;
-    background: #eef2ff;
-    border-radius: 6px;
-  }
+    /* Big heading */
+    .main-heading {
+      font-size: 38px;
+      font-weight: 700;
+      color: #252525;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
 
-  .glass-card input {
-    border-radius: 12px !important;
-    padding: 10px 13px !important;
-  }
+    .subtext {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 40px;
+    }
 
-  .btn-cta {
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: 0.2s;
-  }
+    /* Card form */
+    .form-card {
+      width: 380px;
+      padding: 35px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.07);
+      text-align: left;
+    }
 
-  .btn-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 86, 255, 0.3);
-  }
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      color: #333;
+    }
 
-  .subtle {
-    font-size: 0.9rem;
-    color: #6c6c6c;
-  }
-</style>
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: 1px solid #dcdcdc;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: 0.2s ease;
+    }
 
-<div class="full-center">
+    input:focus {
+      border-color: #6c63ff;
+      outline: none;
+      box-shadow: 0 0 10px rgba(108, 99, 255, 0.25);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #6c63ff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #5a54db;
+    }
+
+    .footer-text {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    a {
+      color: #6c63ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
 
   <!-- Shapes -->
-  <div class="shape doc-shape"></div>
-  <div class="shape pen-shape"></div>
-  <div class="shape laptop-shape"></div>
+  <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" class="shape one">
+  <img src="https://cdn-icons-png.flaticon.com/512/906/906334.png" class="shape two">
+  <img src="https://cdn-icons-png.flaticon.com/512/681/681392.png" class="shape three">
 
-  <!-- Login Card -->
-  <div class="glass-card">
-    <h2 class="text-center mb-1" style="font-weight: 700;">Welcome Back</h2>
-    <p class="text-center subtle mb-4">Login to your Clause AI account</p>
+  <div class="wrapper">
+    <h1 class="main-heading">Create Your Account</h1>
+    <p class="subtext">Join us and start using Clause AI with ease.</p>
 
-    <form action="/login" method="POST">
+    <div class="form-card">
+      <form method="POST" action="/signup">
 
-      <div class="form-group mb-3">
-        <label class="fw-semibold">Email</label>
-        <input type="email" class="form-control" name="email" required placeholder="you@example.com">
-      </div>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required>
 
-      <div class="form-group mb-3">
-        <label class="fw-semibold">Password</label>
-        <input type="password" class="form-control" name="password" required placeholder="••••••••">
-      </div>
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required>
 
-      <div class="text-end mb-3">
-        <a href="/forgot-password" class="subtle text-decoration-none">Forgot password?</a>
-      </div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
 
-      <button type="submit" class="btn btn-primary w-100 py-2 btn-cta" style="background: #0056ff;">
-        Login
-      </button>
+        <button type="submit">Sign Up</button>
 
-      <p class="text-center mt-3 subtle">
-        New to Clause AI?  
-        <a href="/signup" class="fw-semibold">Create an account</a>
-      </p>
-
-    </form>
+        <p class="footer-text">
+          Already have an account? <a href="/login">Login</a>
+        </p>
+      </form>
+    </div>
   </div>
-</div>
 
-{% endblock %}
+</body>
+</html>
