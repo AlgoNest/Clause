@@ -7,12 +7,14 @@ from github_service import GitHubService
 import json
 import PyPDF2
 import docx
+from dotenv import load_dotenv
 import os
 import re
 
 app = Flask(__name__)
 app.secret_key = "oursupersecretkeyissimpleasmysassyouknowiknew"
 CORS(app)  # Enable CORS for all routes
+load_dotenv()  # loads variables from .env file
 
 # Configure logging
 
