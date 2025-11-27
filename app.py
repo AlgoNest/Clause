@@ -40,6 +40,9 @@ gh = GitHubService(
     repo_owner=os.getenv("repo_owner"),
     repo_name=os.getenv("repo_name")
 )
+print("Token:", os.getenv("github_token"))
+print("Repo owner:", os.getenv("repo_owner"))
+print("Repo name:", os.getenv("repo_name"))
 
 # ---------------------------
 # Signup
