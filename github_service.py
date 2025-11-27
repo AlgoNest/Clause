@@ -48,7 +48,7 @@ class GitHubService:
     # Load all users
     # ---------------------------
     def load_users(self) -> List[dict]:
-        file_path = "users.json"  # Root level file
+        file_path = "users/users.json"  # Root level file
         url = f"{self.base_url}/contents/{file_path}"
 
         response = self._make_request("GET", url)
@@ -72,7 +72,7 @@ class GitHubService:
     # Save users list
     # ---------------------------
     def save_users(self, users: List[dict]):
-        file_path = "users.json"
+        file_path = "users/users.json"
         url = f"{self.base_url}/contents/{file_path}"
 
         # Check for existing SHA
