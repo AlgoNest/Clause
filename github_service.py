@@ -16,7 +16,7 @@ class GitHubService:
         self.base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
         self.headers = {
             "Authorization": f"token {self.token}",
-            "Accept": "application/vnd.github.v3+json"
+            "Accept": "application/vnd.github+json"
         }
 
     # ---------------------------
