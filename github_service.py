@@ -49,7 +49,7 @@ class GitHubService:
     # ---------------------------
     def load_users(self) -> List[dict]:
         file_path = "users/users.json"  # Root level file
-        url = f"{self.base_url}/contents/{file_path}"
+        url = f"{self.base_url}/{file_path}"
 
         response = self._make_request("GET", url)
         if response is None:
@@ -73,7 +73,7 @@ class GitHubService:
     # ---------------------------
     def save_users(self, users: List[dict]):
         file_path = "users/users.json"
-        url = f"{self.base_url}/contents/{file_path}"
+        url = f"{self.base_url}/{file_path}"
 
         # Check for existing SHA
         sha = None
@@ -105,9 +105,9 @@ class GitHubService:
     # Save analysis data
     # ---------------------------
     def save_analysis(self, analysis_data: Dict[str, Any]) -> str:
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        file_path = f"contracts/{timestamp}/analysis.json"
-        url = f"{self.base_url}/contents/{file_path}"
+        
+        file_path = "users/users.json"
+        url = f"{self.base_url}/{file_path}"
 
         content = json.dumps(analysis_data, indent=2)
         encoded = base64.b64encode(content.encode()).decode()
@@ -129,8 +129,8 @@ class GitHubService:
     # Get analysis data
     # ---------------------------
     def get_analysis(self, analysis_id: str) -> Dict[str, Any]:
-        file_path = f"contracts/{analysis_id}/analysis.json"
-        url = f"{self.base_url}/contents/{file_path}"
+        file_path = f"users/users.jsonanalysis.json"
+        url = f"{self.base_url}/{file_path}"
 
         response = self._make_request("GET", url)
         content = response.json()["content"]
@@ -141,7 +141,7 @@ class GitHubService:
     # List all analyses
     # ---------------------------
     def list_analyses(self) -> List[str]:
-        url = f"{self.base_url}/contents/contracts"
+        url = f"{self.base_url}/users/users.json"
         response = self._make_request("GET", url)
         if response is None:
             return []
