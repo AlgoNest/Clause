@@ -57,7 +57,7 @@ def signup():
 
         gh.add_user({"name": name, "email": email, "password": password})
         flash("Signup successful!")
-        return redirect("/login")
+        return redirect("/analyze")
     return render_template("signup.html")
 
 @app.route("/login", methods=["GET", "POST"])
