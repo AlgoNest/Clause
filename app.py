@@ -16,6 +16,13 @@ app.secret_key = "oursupersecretkeyissimpleasmysassyouknowiknew"
 CORS(app)  # Enable CORS for all routes
 load_dotenv()  # loads variables from .env file
 
+gh = GitHubService(
+    token=os.getenv("github_token"),
+    repo_owner=os.getenv("repo_owner"),
+    repo_name=os.getenv("repo_name")
+)
+
+
 # Configure logging
 
 @app.route("/")
@@ -27,6 +34,7 @@ def analyze():
     if request.method == "POST":
         text = request.form.get("contract_text")
         ai_result = run_model(text)
+        gh.save_analysis(ai_result)
         
         return render_template("report.html", 
             ai_result=ai_result,
@@ -34,12 +42,6 @@ def analyze():
         )
     else:
         return render_template("analyze.html")
-
-gh = GitHubService(
-    token=os.getenv("github_token"),
-    repo_owner=os.getenv("repo_owner"),
-    repo_name=os.getenv("repo_name")
-)
 # ---------------------------
 # Signup
 # ---------------------------
