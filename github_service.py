@@ -27,24 +27,36 @@ class GitHubService:
 
         if r.status_code == 404:
             return None
+
         if not r.ok:
-            raise Exception(f"GitHub Error: {r.status_code} - {r.text}")
+            raise Exception(f"GitHub Error {r.status_code}: {r.text}")
 
         return r
 
     # ---------------------------
+    # USERS
+    # ---------------------------
     def load_users(self) -> List[dict]:
+        """
+        Load users/users.json from GitHub.
+        Returns [] if file does not exist.
+        """
         url = f"{self.base_url}/users/users.json"
         response = self._make_request("GET", url)
 
         if response is None:
-            return []  # file not found
+            return []
 
-        content = base64.b64decode(response.json()["content"]).decode()
-        return json.loads(content)
+        content = response.json()["content"]
+        decoded = base64.b64decode(content).decode()
+        return json.loads(decoded)
 
     # ---------------------------
     def save_users(self, users: List[dict]):
+        """
+        Save full users list to GitHub.
+        Automatically handles sha (required for update).
+        """
         url = f"{self.base_url}/users/users.json"
 
         existing = self._make_request("GET", url)
@@ -56,6 +68,7 @@ class GitHubService:
             "message": "Update users.json",
             "content": encoded
         }
+
         if sha:
             data["sha"] = sha
 
@@ -63,14 +76,21 @@ class GitHubService:
 
     # ---------------------------
     def add_user(self, user: dict):
+        """
+        Append a new user into users.json
+        """
         users = self.load_users()
         users.append(user)
         self.save_users(users)
 
     # ---------------------------
-    # Analysis saving system
+    # ANALYSIS SYSTEM
     # ---------------------------
     def save_analysis(self, analysis_data: Dict[str, Any]) -> str:
+        """
+        Save a new analysis log in analyses/{timestamp}.json
+        Always creates a NEW file so SHA is NOT needed.
+        """
         timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%S")
         file_path = f"analyses/{timestamp}.json"
         url = f"{self.base_url}/{file_path}"
@@ -87,18 +107,31 @@ class GitHubService:
 
     # ---------------------------
     def get_analysis(self, analysis_id: str) -> Dict[str, Any]:
+        """
+        Fetch a single analysis file
+        """
         url = f"{self.base_url}/analyses/{analysis_id}.json"
         response = self._make_request("GET", url)
+
+        if response is None:
+            raise FileNotFoundError(f"Analysis {analysis_id} not found")
+
         content = base64.b64decode(response.json()["content"]).decode()
         return json.loads(content)
 
     # ---------------------------
     def list_analyses(self) -> List[str]:
+        """
+        Return all analysis file names WITHOUT .json extension
+        """
         url = f"{self.base_url}/analyses"
         response = self._make_request("GET", url)
+
         if response is None:
             return []
 
         items = response.json()
-        files = [i["name"].replace(".json", "") for i in items if i["type"] == "file"]
-        return sorted(files, reverse=True)
+        return sorted(
+            [i["name"].replace(".json", "") for i in items if i["type"] == "file"],
+            reverse=True
+        )
