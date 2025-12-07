@@ -55,7 +55,7 @@ def signup():
             flash("Email already exists!")
             return redirect("/signup")
 
-        gh.save_users({"name": name, "email": email, "password": password})
+        gh.add_user({"name": name, "email": email, "password": password})
         flash("Signup successful!")
         return redirect("/analyze")
     return render_template("signup.html")
