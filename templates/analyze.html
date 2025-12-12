@@ -1,191 +1,208 @@
-{% extends "layout.html" %}
-{% block title %}Clause Analyzer{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <title>Clause — Contract Analyzer</title>
 
-{% block body %}
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-<div class="relative isolate px-6 pt-14 lg:px-8">
+  <style>
+    body {
+      background: linear-gradient(180deg, #f9fafb 0%, #eef2f7 40%, #ffffff 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
 
-  <!-- Navbar -->
-  <nav class="flex items-center justify-between py-4 mb-16">
+<body class="font-sans text-slate-800">
+
+<!-- NAVBAR -->
+<header class="border-b border-slate-200 bg-white/70 backdrop-blur-md sticky top-0 z-50">
+  <nav class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
     <div class="flex items-center space-x-2">
-      <span class="text-2xl font-semibold">Clause</span>
-      <span class="text-sm text-gray-500">AI Analyzer</span>
+      <div class="flex items-center space-x-1">
+        <span class="text-3xl font-bold text-indigo-700">Clause</span>
+        <span class="text-sm text-slate-500 tracking-wide">AI</span>
+      </div>
     </div>
+
+    <a href="/pricing"
+       class="hidden sm:block text-sm font-medium px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100">
+      Pricing
+    </a>
   </nav>
+</header>
 
-  <!-- Hero -->
-  <div class="mx-auto max-w-2xl py-16 text-center">
-    <h1 class="text-4xl font-bold sm:text-6xl">Review Rental Contracts Instantly</h1>
-    <p class="mt-6 text-lg text-gray-600">Paste text or upload a file. Analysis will be generated using AI + rule-based logic.</p>
-  </div>
+<!-- HERO -->
+<section class="text-center max-w-2xl mx-auto pt-20 pb-16 px-6">
+  <h1 class="text-4xl sm:text-6xl font-bold leading-tight text-slate-900">
+    AI-Powered Rental Contract Review
+  </h1>
+  <p class="mt-5 text-lg text-slate-600">
+    Upload or paste your rental agreement. Our hybrid AI + rule-based engine highlights risks,
+    obligations, hidden clauses, and compliance issues instantly.
+  </p>
+</section>
 
-  <!-- Error Toast -->
-  <div id="errorBox" class="hidden max-w-3xl mx-auto mb-6 p-4 rounded-xl bg-red-100 border border-red-300 text-red-800 text-sm">
-  </div>
-
-  <!-- Main Card -->
-  <div class="mx-auto max-w-3xl mt-6 mb-20 bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
-    <h2 class="text-2xl font-semibold mb-4">Analyze Your Contract</h2>
-
-    <form id="analyzeForm" action="/analyze" method="post" enctype="multipart/form-data" class="space-y-6">
-
-      <!-- Sample Button -->
-      <button type="button"
-              id="sampleBtn"
-              class="w-full mb-4 rounded-xl bg-gray-900 py-2 text-white font-semibold text-sm hover:bg-gray-700">
-        Use Sample Contract
-      </button>
-
-      <!-- Textarea -->
-      <div>
-        <label class="block mb-2 text-sm font-medium text-gray-700">Contract Text</label>
-        <textarea name="contract_text" id="contractText"
-                  rows="8"
-                  class="w-full rounded-xl border border-gray-300 p-4 focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Paste text or upload a file..."></textarea>
-      </div>
-
-      <!-- File Upload -->
-      <div>
-        <label class="block mb-2 text-sm font-medium text-gray-700">Upload Contract File</label>
-        <input type="file" id="fileInput" name="contract_file"
-               class="w-full rounded-xl border border-gray-300 p-3 bg-gray-50 cursor-pointer" />
-      </div>
-
-      <!-- Analyze Button -->
-      <button type="submit"
-              class="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold text-lg hover:bg-indigo-700 shadow">
-        Analyze Contract
-      </button>
-
-    </form>
-  </div>
+<!-- ERROR TOAST -->
+<div id="errorBox"
+     class="hidden max-w-3xl mx-auto mb-8 p-4 rounded-xl bg-red-100 border border-red-300 text-red-800 text-sm">
 </div>
 
+<!-- MAIN CARD -->
+<div class="max-w-3xl mx-auto bg-white border border-slate-200 shadow-2xl rounded-2xl p-10 mb-20">
+
+  <h2 class="text-2xl font-semibold mb-6 text-slate-900">Analyze Your Contract</h2>
+
+  <form id="analyzeForm" action="/analyze" method="POST" enctype="multipart/form-data" class="space-y-8">
+
+    <!-- SAMPLE BTN -->
+    <button type="button"
+            id="sampleBtn"
+            class="w-full rounded-xl bg-slate-900 py-2.5 text-white font-semibold text-sm hover:bg-slate-700 transition">
+      Load Sample Rental Agreement
+    </button>
+
+    <!-- TEXTAREA -->
+    <div>
+      <label class="block mb-2 text-sm font-medium text-slate-700">Contract Text</label>
+      <textarea name="contract_text" id="contractText" rows="8"
+        class="w-full rounded-xl border border-slate-300 p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+        placeholder="Paste the contract text here..."></textarea>
+    </div>
+
+    <!-- FILE UPLOAD -->
+    <div>
+      <label class="block mb-2 text-sm font-medium text-slate-700">Upload Contract (PDF, DOCX, TXT)</label>
+
+      <div class="rounded-xl border border-slate-300 bg-slate-50 p-4 flex items-center justify-between cursor-pointer">
+        <span class="text-slate-600 text-sm">Choose a file...</span>
+        <input type="file" id="fileInput" name="contract_file" class="absolute opacity-0 w-full h-full cursor-pointer" />
+      </div>
+    </div>
+
+    <!-- ANALYZE BUTTON -->
+    <button type="submit"
+      class="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold text-lg hover:bg-indigo-700 transition shadow-lg">
+      Analyze Contract
+    </button>
+
+  </form>
+</div>
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.6.172/pdf.min.js"></script>
 
-<!-- DOCX text extraction -->
+<!-- DOCX Extract -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js"></script>
 
 <script>
-
-function showError(message) {
-    const box = document.getElementById("errorBox");
-    box.textContent = message;
-    box.classList.remove("hidden");
-    setTimeout(() => box.classList.add("hidden"), 6000);
+// ---------------------- ERROR TOAST ----------------------
+function showError(msg) {
+  const box = document.getElementById("errorBox");
+  box.textContent = msg;
+  box.classList.remove("hidden");
+  setTimeout(() => box.classList.add("hidden"), 6000);
 }
 
-/* ------------------------------------
-   SAMPLE CONTRACT BUTTON
------------------------------------- */
-document.getElementById("sampleBtn").addEventListener("click", function () {
-    try {
-        const sample = `
-RENTAL AGREEMENT
+// ---------------------- SAMPLE BTN ----------------------
+document.getElementById("sampleBtn").addEventListener("click", () => {
+  try {
+    document.getElementById("contractText").value =
+`RENTAL AGREEMENT
 
-This Rental Agreement is between the Landlord and Tenant.
+This Agreement is between the Landlord and Tenant.
 
 1. Rent must be paid on time.
 2. Security deposit is refundable unless damages occur.
 3. Tenant must follow property rules.
 4. Landlord must provide 30-day notice for termination.
-5. Tenant may not sublet without written permission.
+5. Tenant may not sublet without permission.
 
-Signed by both parties.
-        `;
-        document.getElementById("contractText").value = sample.trim();
-    } catch (err) {
-        showError("Failed to load sample contract. Please try again.");
-    }
+Signed by both parties.`;
+  } catch {
+    showError("Failed to load sample contract.");
+  }
 });
 
-
-/* ------------------------------------
-   FILE → TEXT CONVERSION + ERRORS
------------------------------------- */
+// ---------------------- FILE HANDLING ----------------------
 document.getElementById("fileInput").addEventListener("change", async function () {
-    const file = this.files[0];
-    if (!file) return;
+  const file = this.files[0];
+  if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-        showError("File too large. Maximum allowed: 5 MB");
-        this.value = "";
-        return;
-    }
+  if (file.size > 5 * 1024 * 1024) {
+    showError("File too large. Max 5 MB.");
+    this.value = "";
+    return;
+  }
 
-    const ext = file.name.split(".").pop().toLowerCase();
-    const supported = ["pdf", "txt", "docx"];
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (!["pdf", "txt", "docx"].includes(ext)) {
+    showError("Unsupported format. Allowed: PDF, DOCX, TXT.");
+    this.value = "";
+    return;
+  }
 
-    if (!supported.includes(ext)) {
-        showError("Unsupported file type. Allowed: PDF, TXT, DOCX.");
-        this.value = "";
-        return;
-    }
-
-    try {
-        if (ext === "pdf") extractPDF(file);
-        if (ext === "txt") extractTXT(file);
-        if (ext === "docx") extractDOCX(file);
-    } catch (error) {
-        showError("Failed to extract text from file. Try another file.");
-    }
+  try {
+    if (ext === "pdf") extractPDF(file);
+    if (ext === "txt") extractTXT(file);
+    if (ext === "docx") extractDOCX(file);
+  } catch {
+    showError("Failed to extract file.");
+  }
 });
 
-
-/* ----- Extract PDF ----- */
+// ---------------------- PDF ----------------------
 async function extractPDF(file) {
-    try {
-        const buffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-        let text = "";
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = "";
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            text += content.items.map(i => i.str).join(" ") + "\n";
-        }
-
-        document.getElementById("contractText").value = text;
-    } catch {
-        showError("Error reading PDF file.");
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(i => i.str).join(" ") + "\n";
     }
+
+    document.getElementById("contractText").value = text;
+  } catch {
+    showError("Error reading PDF.");
+  }
 }
 
-/* ----- Extract TXT ----- */
+// ---------------------- TXT ----------------------
 function extractTXT(file) {
-    const reader = new FileReader();
-    reader.onerror = () => showError("Error reading TXT file.");
-    reader.onload = () => document.getElementById("contractText").value = reader.result;
-    reader.readAsText(file);
+  const reader = new FileReader();
+  reader.onerror = () => showError("Error reading TXT.");
+  reader.onload = () => document.getElementById("contractText").value = reader.result;
+  reader.readAsText(file);
 }
 
-/* ----- Extract DOCX ----- */
+// ---------------------- DOCX ----------------------
 async function extractDOCX(file) {
-    try {
-        const buffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer: buffer });
-        document.getElementById("contractText").value = result.value;
-    } catch {
-        showError("Error reading DOCX file.");
-    }
+  try {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    document.getElementById("contractText").value = result.value;
+  } catch {
+    showError("Error reading DOCX.");
+  }
 }
 
-
-/* ------------------------------------
-   VALIDATE BEFORE SUBMIT
------------------------------------- */
-document.getElementById("analyzeForm").addEventListener("submit", function (e) {
-    const text = document.getElementById("contractText").value.trim();
-
-    if (!text) {
-        e.preventDefault();
-        showError("Please paste text, upload a file, or use the sample contract before analyzing.");
-        return;
-    }
+// ---------------------- VALIDATION ----------------------
+document.getElementById("analyzeForm").addEventListener("submit", (e) => {
+  const text = document.getElementById("contractText").value.trim();
+  if (!text) {
+    e.preventDefault();
+    showError("Paste text or upload a file first.");
+  }
 });
 </script>
 
-{% endblock %}
+</body>
+</html>
