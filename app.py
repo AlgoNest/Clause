@@ -33,6 +33,8 @@ def index():
 def analyze():
     if request.method == "POST":
         text = request.form.get("contract_text")
+        if not text:
+            return render_template("analyze.html")
         ai_result = run_model(text)
         gh.save_analysis(ai_result)
         
