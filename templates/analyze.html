@@ -76,20 +76,24 @@
     </div>
 
     <!-- FILE UPLOAD -->
-    <div>
-      <label class="block mb-2 text-sm font-medium text-slate-700">Upload Contract (PDF, DOCX, TXT)</label>
+     <label class="block mb-4 font-semibold">Upload Contract</label>
 
-      <div class="rounded-xl border border-slate-300 bg-slate-50 p-4 flex items-center justify-between cursor-pointer">
-        <span class="text-slate-600 text-sm">Choose a file...</span>
-        <input type="file" id="fileInput" name="contract_file" class="absolute opacity-0 w-full h-full cursor-pointer" />
-      </div>
-    </div>
+      <!-- THIS IS THE FIX: The input is not wrapped by any clickable div -->
+      <input
+        type="file"
+        name="contract"
+        accept=".pdf,.docx,.txt"
+        class="block w-full border border-gray-300 rounded-lg p-3 cursor-pointer bg-gray-50"
+      />
 
-    <!-- ANALYZE BUTTON -->
-    <button type="submit"
-      class="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold text-lg hover:bg-indigo-700 transition shadow-lg">
-      Analyze Contract
-    </button>
+      <!-- Analyze button is completely separate -->
+      <button
+        type="submit"
+        class="mt-6 w-full py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 font-semibold"
+      >
+        Analyze
+      </button>
+
 
   </form>
 </div>
